@@ -1,7 +1,7 @@
 import { describe, expect, it } from "vitest";
 import { z } from "zod";
 
-import { ApiError } from "../errors/apiError.js";
+import { RequestValidationError } from "./requestValidationError.js";
 import { validateRequest } from "./validateRequest.js";
 
 describe("validateRequest", () => {
@@ -58,11 +58,6 @@ describe("validateRequest", () => {
         params: {},
         query: {},
       }),
-    ).toThrow(
-      new ApiError({
-        code: "BAD_REQUEST",
-        message: "Request validation failed.",
-      }),
-    );
+    ).toThrow(new RequestValidationError());
   });
 });

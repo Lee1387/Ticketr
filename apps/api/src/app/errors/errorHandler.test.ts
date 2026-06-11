@@ -1,18 +1,15 @@
 import { describe, expect, it } from "vitest";
 
 import { buildApp } from "../buildApp.js";
-import { ApiError } from "./apiError.js";
+import { RequestValidationError } from "../validation/requestValidationError.js";
 
 describe("error handler", () => {
-  it("returns safe details for intentional API errors", async () => {
+  it("returns safe details for sensible client errors", async () => {
     const app = buildApp();
 
     try {
       app.get("/known-error", () => {
-        throw new ApiError({
-          code: "NOT_FOUND",
-          message: "Ticket was not found.",
-        });
+        throw app.httpErrors.notFound("Ticket was not found.");
       });
 
       const response = await app.inject({
@@ -25,6 +22,31 @@ describe("error handler", () => {
         error: {
           code: "NOT_FOUND",
           message: "Ticket was not found.",
+        },
+      });
+    } finally {
+      await app.close();
+    }
+  });
+
+  it("returns safe details for request validation errors", async () => {
+    const app = buildApp();
+
+    try {
+      app.post("/validation-error", () => {
+        throw new RequestValidationError();
+      });
+
+      const response = await app.inject({
+        method: "POST",
+        url: "/validation-error",
+      });
+
+      expect(response.statusCode).toBe(400);
+      expect(response.json()).toEqual({
+        error: {
+          code: "BAD_REQUEST",
+          message: "Request validation failed.",
         },
       });
     } finally {

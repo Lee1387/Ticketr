@@ -1,7 +1,7 @@
 import type { FastifyRequest } from "fastify";
 import type { z } from "zod";
 
-import { ApiError } from "../errors/apiError.js";
+import { RequestValidationError } from "./requestValidationError.js";
 
 type RequestInput = Pick<FastifyRequest, "body" | "params" | "query">;
 
@@ -18,10 +18,7 @@ export function validateRequest<TSchema extends z.ZodType>(
   const result = schema.safeParse(toRequestShape(request));
 
   if (!result.success) {
-    throw new ApiError({
-      code: "BAD_REQUEST",
-      message: "Request validation failed.",
-    });
+    throw new RequestValidationError();
   }
 
   return result.data;

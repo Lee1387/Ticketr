@@ -27,7 +27,7 @@ describe("buildApp", () => {
       expect(response.statusCode).toBe(413);
       expect(response.json()).toEqual({
         error: {
-          code: "FST_ERR_CTP_BODY_TOO_LARGE",
+          code: "PAYLOAD_TOO_LARGE",
           message: "Request body is too large",
         },
       });
