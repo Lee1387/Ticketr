@@ -1,0 +1,22 @@
+{
+  "name": "@ticketr/api",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "description": "Ticketr backend API service",
+  "license": "UNLICENSED",
+  "scripts": {
+    "typecheck": "tsc --noEmit",
+    "build": "tsc --build tsconfig.build.json",
+    "test": "vitest run",
+    "start": "node dist/server.js"
+  },
+  "engines": {
+    "node": ">=24.0.0 <25",
+    "pnpm": ">=10.12.1 <11"
+  },
+  "dependencies": {
+    "fastify": "^5.8.5",
+    "zod": "^4.4.3"
+  }
+}
