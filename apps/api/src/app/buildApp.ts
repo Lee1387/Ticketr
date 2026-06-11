@@ -1,13 +1,21 @@
 import Fastify, { type FastifyInstance } from "fastify";
 
-import { registerHealthRoutes } from "../modules/health/health.routes.js";
+import { registerErrorHandler } from "./errors/errorHandler.js";
+import { buildRequestIdOptions, registerRequestIdPlugin } from "./plugins/requestIdPlugin.js";
+import { registerRoutes } from "./routes/registerRoutes.js";
+
+export const requestBodyLimitBytes = 1_048_576;
 
 export function buildApp(): FastifyInstance {
   const app = Fastify({
+    bodyLimit: requestBodyLimitBytes,
     logger: true,
+    ...buildRequestIdOptions(),
   });
 
-  registerHealthRoutes(app);
+  registerErrorHandler(app);
+  registerRequestIdPlugin(app);
+  registerRoutes(app);
 
   return app;
 }
