@@ -3,7 +3,7 @@ import { index, pgEnum, pgTable, text, timestamp, uuid, varchar } from "drizzle-
 import {
   ticketPriorityValues,
   ticketStatusValues,
-} from "../../../modules/tickets/tickets.schemas.js";
+} from "../../../modules/tickets/tickets.constants.js";
 import { organizationsTable } from "./organizations.js";
 
 export const ticketStatusEnum = pgEnum("ticket_status", ticketStatusValues);

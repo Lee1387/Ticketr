@@ -1,6 +1,10 @@
 import { describe, expect, it } from "vitest";
 
-import { createTicketSchema, ticketPriorityValues, ticketStatusValues } from "./tickets.schemas.js";
+import {
+  createTicketSchema,
+  ticketPriorityValues,
+  ticketStatusValues,
+} from "../tickets.schemas.js";
 
 describe("ticket schemas", () => {
   it("defines the supported ticket statuses", () => {

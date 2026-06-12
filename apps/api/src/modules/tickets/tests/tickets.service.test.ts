@@ -4,9 +4,11 @@ import {
   type OrganizationLookup,
   ticketNotFoundMessage,
   ticketOrganizationNotFoundMessage,
+  ticketStatusChangedBeforeUpdateMessage,
+  ticketStatusTransitionNotAllowedMessage,
   type TicketsRepositoryPort,
   TicketsService,
-} from "./tickets.service.js";
+} from "../tickets.service.js";
 
 describe("TicketsService", () => {
   const organizationId = "6b4df69e-0950-4209-b79a-a5b5d251540f";
@@ -33,6 +35,7 @@ describe("TicketsService", () => {
       create: vi.fn(() => Promise.resolve(createdTicket)),
       findByOrganizationIdAndId: vi.fn(() => Promise.resolve(null)),
       listByOrganizationId: vi.fn(() => Promise.resolve([])),
+      updateStatusByOrganizationIdAndId: vi.fn(() => Promise.resolve(null)),
       ...overrides,
     };
   }
@@ -172,5 +175,119 @@ describe("TicketsService", () => {
       message: ticketOrganizationNotFoundMessage,
     });
     expect(ticketsRepository.listByOrganizationId).not.toHaveBeenCalled();
+  });
+
+  it("updates a ticket status within an organization", async () => {
+    const organizationLookup: OrganizationLookup = {
+      findById: (id) => Promise.resolve({ id }),
+    };
+    const updatedTicket = {
+      ...createdTicket,
+      status: "pending" as const,
+      updatedAt: new Date("2026-01-02T00:00:00.000Z"),
+    };
+    const ticketsRepository = createTicketsRepository({
+      findByOrganizationIdAndId: vi.fn(() => Promise.resolve(createdTicket)),
+      updateStatusByOrganizationIdAndId: vi.fn(() => Promise.resolve(updatedTicket)),
+    });
+    const service = new TicketsService(organizationLookup, ticketsRepository);
+
+    const result = await service.updateTicketStatus({
+      organizationId,
+      ticketId: createdTicket.id,
+      input: {
+        status: "pending",
+      },
+    });
+
+    expect(result).toEqual({
+      status: "updated",
+      ticket: updatedTicket,
+    });
+    expect(ticketsRepository.findByOrganizationIdAndId).toHaveBeenCalledWith({
+      id: createdTicket.id,
+      organizationId,
+    });
+    expect(ticketsRepository.updateStatusByOrganizationIdAndId).toHaveBeenCalledWith({
+      currentStatus: "open",
+      id: createdTicket.id,
+      organizationId,
+      status: "pending",
+    });
+  });
+
+  it("reports a missing ticket when updating status", async () => {
+    const organizationLookup: OrganizationLookup = {
+      findById: (id) => Promise.resolve({ id }),
+    };
+    const ticketsRepository = createTicketsRepository();
+    const service = new TicketsService(organizationLookup, ticketsRepository);
+
+    const result = await service.updateTicketStatus({
+      organizationId,
+      ticketId: createdTicket.id,
+      input: {
+        status: "pending",
+      },
+    });
+
+    expect(result).toEqual({
+      status: "not-found",
+      message: ticketNotFoundMessage,
+    });
+    expect(ticketsRepository.updateStatusByOrganizationIdAndId).not.toHaveBeenCalled();
+  });
+
+  it("reports a conflict when the ticket status changes before update", async () => {
+    const organizationLookup: OrganizationLookup = {
+      findById: (id) => Promise.resolve({ id }),
+    };
+    const ticketsRepository = createTicketsRepository({
+      findByOrganizationIdAndId: vi.fn(() => Promise.resolve(createdTicket)),
+      updateStatusByOrganizationIdAndId: vi.fn(() => Promise.resolve(null)),
+    });
+    const service = new TicketsService(organizationLookup, ticketsRepository);
+
+    const result = await service.updateTicketStatus({
+      organizationId,
+      ticketId: createdTicket.id,
+      input: {
+        status: "pending",
+      },
+    });
+
+    expect(result).toEqual({
+      status: "conflict",
+      message: ticketStatusChangedBeforeUpdateMessage,
+    });
+  });
+
+  it("rejects unsupported ticket status transitions", async () => {
+    const organizationLookup: OrganizationLookup = {
+      findById: (id) => Promise.resolve({ id }),
+    };
+    const closedTicket = {
+      ...createdTicket,
+      status: "closed" as const,
+    };
+    const ticketsRepository = createTicketsRepository({
+      findByOrganizationIdAndId: vi.fn(() => Promise.resolve(closedTicket)),
+      updateStatusByOrganizationIdAndId: vi.fn(() => Promise.resolve(createdTicket)),
+    });
+    const service = new TicketsService(organizationLookup, ticketsRepository);
+
+    const result = await service.updateTicketStatus({
+      organizationId,
+      ticketId: createdTicket.id,
+      input: {
+        status: "resolved",
+      },
+    });
+
+    expect(result).toEqual({
+      status: "conflict",
+      message: ticketStatusTransitionNotAllowedMessage,
+    });
+    expect(ticketsRepository.updateStatusByOrganizationIdAndId).not.toHaveBeenCalled();
   });
 });

@@ -4,7 +4,12 @@ import { z } from "zod";
 import { validateRequest } from "../../app/validation/validateRequest.js";
 import { organizationIdSchema } from "../organizations/organizations.schemas.js";
 import { toTicketResponse } from "./tickets.mapper.js";
-import { createTicketSchema, listTicketsQuerySchema, ticketIdSchema } from "./tickets.schemas.js";
+import {
+  createTicketSchema,
+  listTicketsQuerySchema,
+  ticketIdSchema,
+  updateTicketStatusSchema,
+} from "./tickets.schemas.js";
 import type { TicketsService } from "./tickets.service.js";
 
 const listTicketsRequestSchema = z.object({
@@ -28,6 +33,15 @@ const createTicketRequestSchema = z.object({
   body: createTicketSchema,
   params: z.object({
     organizationId: organizationIdSchema,
+  }),
+  query: z.object({}),
+});
+
+const updateTicketStatusRequestSchema = z.object({
+  body: updateTicketStatusSchema,
+  params: z.object({
+    organizationId: organizationIdSchema,
+    ticketId: ticketIdSchema,
   }),
   query: z.object({}),
 });
@@ -81,6 +95,26 @@ export function registerTicketRoutes(app: FastifyInstance, ticketsService: Ticke
         return reply.code(201).send({
           ticket: toTicketResponse(result.ticket),
         });
+    }
+  });
+
+  app.patch("/organizations/:organizationId/tickets/:ticketId/status", async (request) => {
+    const validatedRequest = validateRequest(updateTicketStatusRequestSchema, request);
+    const result = await ticketsService.updateTicketStatus({
+      organizationId: validatedRequest.params.organizationId,
+      ticketId: validatedRequest.params.ticketId,
+      input: validatedRequest.body,
+    });
+
+    switch (result.status) {
+      case "not-found":
+        throw app.httpErrors.notFound(result.message);
+      case "conflict":
+        throw app.httpErrors.conflict(result.message);
+      case "updated":
+        return {
+          ticket: toTicketResponse(result.ticket),
+        };
     }
   });
 }

@@ -1,8 +1,8 @@
 import { z } from "zod";
 
-export const ticketStatusValues = ["open", "pending", "resolved", "closed"] as const;
+import { ticketPriorityValues, ticketStatusValues } from "./tickets.constants.js";
 
-export const ticketPriorityValues = ["low", "normal", "high", "urgent"] as const;
+export { ticketPriorityValues, ticketStatusValues };
 
 export const ticketStatusSchema = z.enum(ticketStatusValues);
 
@@ -22,4 +22,8 @@ export const createTicketSchema = z.object({
   subject: z.string().trim().min(1).max(160),
   description: z.string().trim().min(1).max(10_000),
   priority: ticketPrioritySchema.default("normal"),
+});
+
+export const updateTicketStatusSchema = z.object({
+  status: ticketStatusSchema,
 });

@@ -1,8 +1,11 @@
 import { z } from "zod";
 
-export const organizationStatusValues = ["active", "suspended"] as const;
+import {
+  organizationMemberRoleValues,
+  organizationStatusValues,
+} from "./organizations.constants.js";
 
-export const organizationMemberRoleValues = ["owner", "admin", "agent"] as const;
+export { organizationMemberRoleValues, organizationStatusValues };
 
 export const organizationIdSchema = z.uuid();
 

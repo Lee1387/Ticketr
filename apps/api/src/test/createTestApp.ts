@@ -44,6 +44,14 @@ const defaultTicketsRepository: TicketsRepositoryPort = {
         organizationId,
       },
     ]),
+  updateStatusByOrganizationIdAndId: ({ id, organizationId, status }) =>
+    Promise.resolve({
+      ...defaultTicket,
+      id,
+      organizationId,
+      status,
+      updatedAt: new Date("2026-01-02T00:00:00.000Z"),
+    }),
 };
 
 export function createTestApp(options: Partial<BuildAppOptions> = {}): FastifyInstance {

@@ -1,6 +1,6 @@
 import { pgEnum, pgTable, timestamp, uuid, varchar } from "drizzle-orm/pg-core";
 
-import { organizationStatusValues } from "../../../modules/organizations/organizations.schemas.js";
+import { organizationStatusValues } from "../../../modules/organizations/organizations.constants.js";
 
 export const organizationStatusEnum = pgEnum("organization_status", organizationStatusValues);
 

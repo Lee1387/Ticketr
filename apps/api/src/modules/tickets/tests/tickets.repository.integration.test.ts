@@ -1,9 +1,9 @@
 import { afterAll, beforeAll, beforeEach, describe, expect, it } from "vitest";
 
-import { organizationsTable } from "../../infrastructure/db/schema/organizations.js";
-import { ticketsTable } from "../../infrastructure/db/schema/tickets.js";
-import { createTestDatabase, type TestDatabase } from "../../test/createTestDatabase.js";
-import { TicketsRepository } from "./tickets.repository.js";
+import { organizationsTable } from "../../../infrastructure/db/schema/organizations.js";
+import { ticketsTable } from "../../../infrastructure/db/schema/tickets.js";
+import { createTestDatabase, type TestDatabase } from "../../../test/createTestDatabase.js";
+import { TicketsRepository } from "../tickets.repository.js";
 
 describe("TicketsRepository integration", () => {
   let testDatabase: TestDatabase | undefined;
@@ -95,6 +95,84 @@ describe("TicketsRepository integration", () => {
       repository.findByOrganizationIdAndId({
         id: ticket.id,
         organizationId: otherOrganizationId,
+      }),
+    ).resolves.toBeNull();
+  });
+
+  it("updates a ticket status scoped to an organization", async () => {
+    const database = getTestDatabase();
+    const repository = new TicketsRepository(database.connection.db);
+    const organizationId = "44444444-4444-4444-8444-444444444444";
+    const otherOrganizationId = "77777777-7777-4777-8777-777777777777";
+
+    await database.connection.db.insert(organizationsTable).values([
+      {
+        id: organizationId,
+        name: "Acme Support",
+        status: "active",
+      },
+      {
+        id: otherOrganizationId,
+        name: "Northwind Support",
+        status: "active",
+      },
+    ]);
+
+    const ticket = await repository.create({
+      organizationId,
+      subject: "Cannot access account",
+      description: "The customer cannot sign in after resetting their password.",
+      priority: "high",
+    });
+
+    await expect(
+      repository.updateStatusByOrganizationIdAndId({
+        currentStatus: "open",
+        id: ticket.id,
+        organizationId: otherOrganizationId,
+        status: "pending",
+      }),
+    ).resolves.toBeNull();
+
+    const updatedTicket = await repository.updateStatusByOrganizationIdAndId({
+      currentStatus: "open",
+      id: ticket.id,
+      organizationId,
+      status: "pending",
+    });
+
+    expect(updatedTicket).toMatchObject({
+      id: ticket.id,
+      organizationId,
+      status: "pending",
+    });
+    expect(updatedTicket?.updatedAt.getTime()).toBeGreaterThanOrEqual(ticket.updatedAt.getTime());
+  });
+
+  it("does not update a ticket status when the current status changed", async () => {
+    const database = getTestDatabase();
+    const repository = new TicketsRepository(database.connection.db);
+    const organizationId = "44444444-4444-4444-8444-444444444444";
+
+    await database.connection.db.insert(organizationsTable).values({
+      id: organizationId,
+      name: "Acme Support",
+      status: "active",
+    });
+
+    const ticket = await repository.create({
+      organizationId,
+      subject: "Cannot access account",
+      description: "The customer cannot sign in after resetting their password.",
+      priority: "high",
+    });
+
+    await expect(
+      repository.updateStatusByOrganizationIdAndId({
+        currentStatus: "pending",
+        id: ticket.id,
+        organizationId,
+        status: "resolved",
       }),
     ).resolves.toBeNull();
   });

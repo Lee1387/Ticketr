@@ -7,12 +7,19 @@ import {
   type TicketRow,
 } from "../../infrastructure/db/schema/tickets.js";
 import type { OrganizationId } from "../organizations/organizations.types.js";
-import type { TicketId } from "./tickets.types.js";
+import type { TicketId, TicketStatus } from "./tickets.types.js";
 
 export type CreateTicketRecord = Pick<
   NewTicketRow,
   "description" | "organizationId" | "priority" | "subject"
 >;
+
+export type UpdateTicketStatusRecord = {
+  currentStatus: TicketStatus;
+  id: TicketId;
+  organizationId: OrganizationId;
+  status: TicketStatus;
+};
 
 export class TicketsRepository {
   constructor(private readonly db: DatabaseClient) {}
@@ -48,6 +55,27 @@ export class TicketsRepository {
         and(eq(ticketsTable.id, input.id), eq(ticketsTable.organizationId, input.organizationId)),
       )
       .limit(1);
+
+    return rows[0] ?? null;
+  }
+
+  async updateStatusByOrganizationIdAndId(
+    input: UpdateTicketStatusRecord,
+  ): Promise<TicketRow | null> {
+    const rows = await this.db
+      .update(ticketsTable)
+      .set({
+        status: input.status,
+        updatedAt: new Date(),
+      })
+      .where(
+        and(
+          eq(ticketsTable.id, input.id),
+          eq(ticketsTable.organizationId, input.organizationId),
+          eq(ticketsTable.status, input.currentStatus),
+        ),
+      )
+      .returning();
 
     return rows[0] ?? null;
   }
