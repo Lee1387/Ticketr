@@ -10,6 +10,7 @@ describe("JWT auth plugin user verification", () => {
     const app = createTestApp({
       services: {
         authService: new AuthService({
+          findByEmail: () => Promise.resolve(null),
           findById: () => Promise.resolve(null),
         }),
       },
@@ -35,6 +36,7 @@ describe("JWT auth plugin user verification", () => {
     const app = createTestApp({
       services: {
         authService: new AuthService({
+          findByEmail: () => Promise.resolve(null),
           findById: () => Promise.resolve({ status: "suspended" as const }),
         }),
       },

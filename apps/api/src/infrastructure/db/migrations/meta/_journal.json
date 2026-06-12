@@ -22,6 +22,13 @@
       "when": 1781269929967,
       "tag": "0002_wealthy_boomerang",
       "breakpoints": true
+    },
+    {
+      "idx": 3,
+      "version": "7",
+      "when": 1781275737124,
+      "tag": "0003_black_rockslide",
+      "breakpoints": true
     }
   ]
 }

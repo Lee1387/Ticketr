@@ -1,21 +1,11 @@
 import { describe, expect, it, vi } from "vitest";
-import { z } from "zod";
 
-import { AuthService } from "../auth.service.js";
-import { OrganizationAccessService } from "../../organizations/organizationAccess.service.js";
 import { createTestApp } from "../../../test/createTestApp.js";
+import { OrganizationAccessService } from "../../organizations/organizationAccess.service.js";
+import { AuthService } from "../auth.service.js";
+import { developmentTokenRouteTestBody, tokenResponseSchema } from "./auth.routes.testUtils.js";
 
-const developmentTokenResponseSchema = z.object({
-  accessToken: z.string().min(1),
-  tokenType: z.literal("Bearer"),
-});
-
-describe("auth routes", () => {
-  const developmentTokenBody = {
-    organizationId: "6b4df69e-0950-4209-b79a-a5b5d251540f",
-    userId: "11111111-1111-4111-8111-111111111111",
-  };
-
+describe("development auth token route", () => {
   it("issues a development access token for an active organization member", async () => {
     const app = createTestApp({ nodeEnv: "development" });
 
@@ -23,17 +13,17 @@ describe("auth routes", () => {
       const tokenResponse = await app.inject({
         method: "POST",
         url: "/auth/dev-token",
-        body: developmentTokenBody,
+        body: developmentTokenRouteTestBody,
       });
 
       expect(tokenResponse.statusCode).toBe(200);
       const tokenResponseBody: unknown = tokenResponse.json();
-      const parsedTokenResponse = developmentTokenResponseSchema.parse(tokenResponseBody);
+      const parsedTokenResponse = tokenResponseSchema.parse(tokenResponseBody);
       expect(parsedTokenResponse.tokenType).toBe("Bearer");
 
       const protectedResponse = await app.inject({
         method: "GET",
-        url: `/organizations/${developmentTokenBody.organizationId}`,
+        url: `/organizations/${developmentTokenRouteTestBody.organizationId}`,
         headers: {
           authorization: `Bearer ${parsedTokenResponse.accessToken}`,
         },
@@ -52,7 +42,7 @@ describe("auth routes", () => {
       const response = await app.inject({
         method: "POST",
         url: "/auth/dev-token",
-        body: developmentTokenBody,
+        body: developmentTokenRouteTestBody,
       });
 
       expect(response.statusCode).toBe(404);
@@ -69,7 +59,7 @@ describe("auth routes", () => {
         method: "POST",
         url: "/auth/dev-token",
         body: {
-          ...developmentTokenBody,
+          ...developmentTokenRouteTestBody,
           userId: "not-a-user-id",
         },
       });
@@ -91,6 +81,7 @@ describe("auth routes", () => {
       nodeEnv: "development",
       services: {
         authService: new AuthService({
+          findByEmail: vi.fn(() => Promise.resolve(null)),
           findById: vi.fn(() => Promise.resolve({ status: "suspended" as const })),
         }),
       },
@@ -100,7 +91,7 @@ describe("auth routes", () => {
       const response = await app.inject({
         method: "POST",
         url: "/auth/dev-token",
-        body: developmentTokenBody,
+        body: developmentTokenRouteTestBody,
       });
 
       expect(response.statusCode).toBe(401);
@@ -129,7 +120,7 @@ describe("auth routes", () => {
       const response = await app.inject({
         method: "POST",
         url: "/auth/dev-token",
-        body: developmentTokenBody,
+        body: developmentTokenRouteTestBody,
       });
 
       expect(response.statusCode).toBe(403);

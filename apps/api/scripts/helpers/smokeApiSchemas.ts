@@ -4,6 +4,11 @@ export const healthResponseSchema = z.object({
   status: z.literal("ok"),
 });
 
+export const tokenResponseSchema = z.object({
+  accessToken: z.string().min(1),
+  tokenType: z.literal("Bearer"),
+});
+
 export const organizationResponseSchema = z.object({
   organization: z.object({
     id: z.uuid(),

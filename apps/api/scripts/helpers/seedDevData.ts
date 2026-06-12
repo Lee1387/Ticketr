@@ -13,6 +13,8 @@ export const devSeedData = {
     id: "11111111-1111-4111-8111-111111111111",
     email: "agent@ticketr.local",
     name: "Local Support Agent",
+    passwordHash:
+      "$argon2id$v=19$m=19456,t=2,p=1$Wk8d0gFTibmTODqKthmyrA$6ljON+2OHVrQoTsBGeT+izutYbua0N7d2PGcVob4SX8",
     status: "active" as const,
   },
   membership: {
@@ -34,6 +36,7 @@ export async function seedDevDatabase(db: DatabaseClient): Promise<void> {
       set: {
         email: devSeedData.user.email,
         name: devSeedData.user.name,
+        passwordHash: devSeedData.user.passwordHash,
         status: devSeedData.user.status,
         updatedAt,
       },

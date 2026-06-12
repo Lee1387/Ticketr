@@ -6,6 +6,7 @@ import {
   organizationResponseSchema,
   ticketListResponseSchema,
   ticketResponseSchema,
+  tokenResponseSchema,
 } from "./helpers/smokeApiSchemas.js";
 
 type SmokeResult = {
@@ -25,10 +26,24 @@ const health = await smokeGetJson({
 });
 recordResult("GET /health", health.statusCode, "status=ok");
 
-const developmentToken = await createDevelopmentToken();
-recordResult("POST /auth/dev-token", 200, "tokenType=Bearer");
+const loginToken = await smokeJson({
+  body: {
+    email: devSeedData.user.email,
+    organizationId,
+    password: "Password123!",
+  },
+  method: "POST",
+  name: "POST /auth/login",
+  path: "/auth/login",
+  expectedStatusCode: 200,
+  schema: tokenResponseSchema,
+});
+recordResult("POST /auth/login", loginToken.statusCode, "tokenType=Bearer");
 
-const authorizationHeader = `${developmentToken.tokenType} ${developmentToken.accessToken}`;
+const developmentToken = await createDevelopmentToken();
+recordResult("POST /auth/dev-token", 200, `tokenType=${developmentToken.tokenType}`);
+
+const authorizationHeader = `${loginToken.data.tokenType} ${loginToken.data.accessToken}`;
 
 const organization = await smokeGetJson({
   authorizationHeader,

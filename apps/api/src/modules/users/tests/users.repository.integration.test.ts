@@ -5,6 +5,8 @@ import { createTestDatabase, type TestDatabase } from "../../../test/createTestD
 import { UsersRepository } from "../users.repository.js";
 
 describe("UsersRepository integration", () => {
+  const testPasswordHash = "test-password-hash";
+
   let testDatabase: TestDatabase | undefined;
 
   beforeAll(async () => {
@@ -39,6 +41,7 @@ describe("UsersRepository integration", () => {
       id: userId,
       email: "alex@example.com",
       name: "Alex Lee",
+      passwordHash: testPasswordHash,
       status: "active",
     });
 
@@ -46,6 +49,7 @@ describe("UsersRepository integration", () => {
       id: userId,
       email: "alex@example.com",
       name: "Alex Lee",
+      passwordHash: testPasswordHash,
       status: "active",
     });
   });
@@ -57,12 +61,14 @@ describe("UsersRepository integration", () => {
       id: userId,
       email: "support@example.com",
       name: "Support Agent",
+      passwordHash: testPasswordHash,
       status: "active",
     });
 
     await expect(getRepository().findByEmail("support@example.com")).resolves.toMatchObject({
       id: userId,
       email: "support@example.com",
+      passwordHash: testPasswordHash,
     });
   });
 

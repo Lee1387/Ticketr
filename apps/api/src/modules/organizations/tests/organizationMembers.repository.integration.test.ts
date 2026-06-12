@@ -43,6 +43,7 @@ describe("OrganizationMembersRepository integration", () => {
       id: userId,
       email: "agent@example.com",
       name: "Support Agent",
+      passwordHash: "test-password-hash",
       status: "active",
     });
 
