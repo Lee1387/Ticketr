@@ -10,6 +10,8 @@ const envSchema = z.object({
   API_HOST: z.string().min(1).default("0.0.0.0"),
   API_PORT: portSchema,
   DATABASE_URL: z.url(),
+  JWT_AUDIENCE: z.string().min(1).default("ticketr-api"),
+  JWT_ISSUER: z.string().min(1).default("ticketr"),
   JWT_SECRET: z.string().min(32),
 });
 

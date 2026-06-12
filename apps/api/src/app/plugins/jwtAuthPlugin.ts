@@ -10,6 +10,8 @@ declare module "fastify" {
 }
 
 export type JwtAuthPluginOptions = {
+  jwtAudience: string;
+  jwtIssuer: string;
   jwtSecret: string;
 };
 
@@ -20,9 +22,13 @@ export function registerJwtAuthPlugin(app: FastifyInstance, options: JwtAuthPlug
   void app.register(jwt, {
     secret: options.jwtSecret,
     sign: {
+      aud: options.jwtAudience,
       expiresIn: jwtAccessTokenExpiresIn,
+      iss: options.jwtIssuer,
     },
     verify: {
+      allowedAud: options.jwtAudience,
+      allowedIss: options.jwtIssuer,
       maxAge: jwtAccessTokenExpiresIn,
     },
   });
@@ -38,7 +44,6 @@ export function registerJwtAuthPlugin(app: FastifyInstance, options: JwtAuthPlug
       const claims = jwtAuthClaimsSchema.parse(payload);
       request.auth = {
         organizationId: claims.organizationId,
-        organizationRole: claims.organizationRole,
         userId: claims.userId,
       };
     } catch {

@@ -12,6 +12,8 @@ describe("API environment config", () => {
       API_HOST: "0.0.0.0",
       API_PORT: 3000,
       DATABASE_URL: databaseUrl,
+      JWT_AUDIENCE: "ticketr-api",
+      JWT_ISSUER: "ticketr",
       JWT_SECRET: jwtSecret,
     });
   });
@@ -23,6 +25,8 @@ describe("API environment config", () => {
         API_HOST: "127.0.0.1",
         API_PORT: "8080",
         DATABASE_URL: databaseUrl,
+        JWT_AUDIENCE: "ticketr-web",
+        JWT_ISSUER: "https://api.ticketr.test",
         JWT_SECRET: jwtSecret,
       }),
     ).toEqual({
@@ -30,6 +34,8 @@ describe("API environment config", () => {
       API_HOST: "127.0.0.1",
       API_PORT: 8080,
       DATABASE_URL: databaseUrl,
+      JWT_AUDIENCE: "ticketr-web",
+      JWT_ISSUER: "https://api.ticketr.test",
       JWT_SECRET: jwtSecret,
     });
   });

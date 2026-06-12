@@ -3,6 +3,7 @@ import { z } from "zod";
 
 import { requireAuth } from "../../app/auth/requireAuth.js";
 import { validateRequest } from "../../app/validation/validateRequest.js";
+import type { OrganizationAccessService } from "../organizations/organizationAccess.service.js";
 import {
   canCreateOrganizationTicket,
   canReadOrganizationTickets,
@@ -56,10 +57,19 @@ const updateTicketStatusRequestSchema = z.object({
   query: z.object({}),
 });
 
-export function registerTicketRoutes(app: FastifyInstance, ticketsService: TicketsService): void {
+export function registerTicketRoutes(
+  app: FastifyInstance,
+  organizationAccessService: OrganizationAccessService,
+  ticketsService: TicketsService,
+): void {
   app.get("/organizations/:organizationId/tickets", async (request) => {
     const validatedRequest = validateRequest(listTicketsRequestSchema, request);
-    authorizeOrganizationTicketRead(app, request, validatedRequest.params.organizationId);
+    await authorizeOrganizationTicketRead(
+      app,
+      organizationAccessService,
+      request,
+      validatedRequest.params.organizationId,
+    );
 
     const result = await ticketsService.listTickets({
       organizationId: validatedRequest.params.organizationId,
@@ -78,7 +88,12 @@ export function registerTicketRoutes(app: FastifyInstance, ticketsService: Ticke
 
   app.get("/organizations/:organizationId/tickets/:ticketId", async (request) => {
     const validatedRequest = validateRequest(getTicketRequestSchema, request);
-    authorizeOrganizationTicketRead(app, request, validatedRequest.params.organizationId);
+    await authorizeOrganizationTicketRead(
+      app,
+      organizationAccessService,
+      request,
+      validatedRequest.params.organizationId,
+    );
 
     const result = await ticketsService.getTicket({
       organizationId: validatedRequest.params.organizationId,
@@ -97,7 +112,12 @@ export function registerTicketRoutes(app: FastifyInstance, ticketsService: Ticke
 
   app.post("/organizations/:organizationId/tickets", async (request, reply) => {
     const validatedRequest = validateRequest(createTicketRequestSchema, request);
-    authorizeOrganizationTicketCreate(app, request, validatedRequest.params.organizationId);
+    await authorizeOrganizationTicketCreate(
+      app,
+      organizationAccessService,
+      request,
+      validatedRequest.params.organizationId,
+    );
 
     const result = await ticketsService.createTicket({
       organizationId: validatedRequest.params.organizationId,
@@ -116,7 +136,12 @@ export function registerTicketRoutes(app: FastifyInstance, ticketsService: Ticke
 
   app.patch("/organizations/:organizationId/tickets/:ticketId/status", async (request) => {
     const validatedRequest = validateRequest(updateTicketStatusRequestSchema, request);
-    authorizeOrganizationTicketStatusUpdate(app, request, validatedRequest.params.organizationId);
+    await authorizeOrganizationTicketStatusUpdate(
+      app,
+      organizationAccessService,
+      request,
+      validatedRequest.params.organizationId,
+    );
 
     const result = await ticketsService.updateTicketStatus({
       organizationId: validatedRequest.params.organizationId,
@@ -139,11 +164,13 @@ export function registerTicketRoutes(app: FastifyInstance, ticketsService: Ticke
 
 function authorizeOrganizationTicketRead(
   app: FastifyInstance,
+  organizationAccessService: OrganizationAccessService,
   request: FastifyRequest,
   organizationId: OrganizationId,
-): void {
-  authorizeOrganizationTicketAction(
+): Promise<void> {
+  return authorizeOrganizationTicketAction(
     app,
+    organizationAccessService,
     request,
     organizationId,
     canReadOrganizationTickets,
@@ -153,11 +180,13 @@ function authorizeOrganizationTicketRead(
 
 function authorizeOrganizationTicketCreate(
   app: FastifyInstance,
+  organizationAccessService: OrganizationAccessService,
   request: FastifyRequest,
   organizationId: OrganizationId,
-): void {
-  authorizeOrganizationTicketAction(
+): Promise<void> {
+  return authorizeOrganizationTicketAction(
     app,
+    organizationAccessService,
     request,
     organizationId,
     canCreateOrganizationTicket,
@@ -167,11 +196,13 @@ function authorizeOrganizationTicketCreate(
 
 function authorizeOrganizationTicketStatusUpdate(
   app: FastifyInstance,
+  organizationAccessService: OrganizationAccessService,
   request: FastifyRequest,
   organizationId: OrganizationId,
-): void {
-  authorizeOrganizationTicketAction(
+): Promise<void> {
+  return authorizeOrganizationTicketAction(
     app,
+    organizationAccessService,
     request,
     organizationId,
     canUpdateOrganizationTicketStatus,
@@ -179,24 +210,27 @@ function authorizeOrganizationTicketStatusUpdate(
   );
 }
 
-function authorizeOrganizationTicketAction(
+async function authorizeOrganizationTicketAction(
   app: FastifyInstance,
+  organizationAccessService: OrganizationAccessService,
   request: FastifyRequest,
   organizationId: OrganizationId,
-  canAccess: (input: {
-    organizationId: OrganizationId;
-    requestedOrganizationId: OrganizationId;
-    role: OrganizationMemberRole;
-  }) => boolean,
+  canAccess: (input: { role: OrganizationMemberRole }) => boolean,
   forbiddenMessage: string,
-): void {
+): Promise<void> {
   const auth = requireAuth(request, app);
+  const access = await organizationAccessService.verifyOrganizationMembership({
+    auth,
+    organizationId,
+  });
+
+  if (access.status === "not-member") {
+    throw app.httpErrors.forbidden(forbiddenMessage);
+  }
 
   if (
     !canAccess({
-      organizationId: auth.organizationId,
-      requestedOrganizationId: organizationId,
-      role: auth.organizationRole,
+      role: access.role,
     })
   ) {
     throw app.httpErrors.forbidden(forbiddenMessage);

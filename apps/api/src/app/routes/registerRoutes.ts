@@ -7,6 +7,10 @@ import type { AppServices } from "../appServices.js";
 
 export function registerRoutes(app: FastifyInstance, services: AppServices): void {
   registerHealthRoutes(app);
-  registerOrganizationRoutes(app, services.organizationsService);
-  registerTicketRoutes(app, services.ticketsService);
+  registerOrganizationRoutes(
+    app,
+    services.organizationAccessService,
+    services.organizationsService,
+  );
+  registerTicketRoutes(app, services.organizationAccessService, services.ticketsService);
 }

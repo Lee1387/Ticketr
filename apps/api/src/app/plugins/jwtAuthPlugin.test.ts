@@ -122,6 +122,76 @@ describe("JWT auth plugin", () => {
     }
   });
 
+  it("rejects bearer tokens with an unexpected issuer", async () => {
+    const app = createTestApp();
+
+    try {
+      app.get("/auth-context-test", () => {
+        return {
+          status: "ok",
+        };
+      });
+
+      await app.ready();
+      const token = app.jwt.sign(defaultTestAuthPayload, {
+        iss: "unexpected-issuer",
+      });
+
+      const response = await app.inject({
+        method: "GET",
+        url: "/auth-context-test",
+        headers: {
+          authorization: `Bearer ${token}`,
+        },
+      });
+
+      expect(response.statusCode).toBe(401);
+      expect(response.json()).toEqual({
+        error: {
+          code: "UNAUTHORIZED",
+          message: "Authentication token is invalid.",
+        },
+      });
+    } finally {
+      await app.close();
+    }
+  });
+
+  it("rejects bearer tokens with an unexpected audience", async () => {
+    const app = createTestApp();
+
+    try {
+      app.get("/auth-context-test", () => {
+        return {
+          status: "ok",
+        };
+      });
+
+      await app.ready();
+      const token = app.jwt.sign(defaultTestAuthPayload, {
+        aud: "unexpected-audience",
+      });
+
+      const response = await app.inject({
+        method: "GET",
+        url: "/auth-context-test",
+        headers: {
+          authorization: `Bearer ${token}`,
+        },
+      });
+
+      expect(response.statusCode).toBe(401);
+      expect(response.json()).toEqual({
+        error: {
+          code: "UNAUTHORIZED",
+          message: "Authentication token is invalid.",
+        },
+      });
+    } finally {
+      await app.close();
+    }
+  });
+
   it("rejects bearer tokens with invalid auth claims", async () => {
     const app = createTestApp();
 

@@ -3,6 +3,7 @@ import { z } from "zod";
 
 import { requireAuth } from "../../app/auth/requireAuth.js";
 import { validateRequest } from "../../app/validation/validateRequest.js";
+import type { OrganizationAccessService } from "./organizationAccess.service.js";
 import { toOrganizationResponse } from "./organizations.mapper.js";
 import { canReadOrganization } from "./organizations.policy.js";
 import { organizationIdSchema } from "./organizations.schemas.js";
@@ -18,17 +19,24 @@ const getOrganizationRequestSchema = z.object({
 
 export function registerOrganizationRoutes(
   app: FastifyInstance,
+  organizationAccessService: OrganizationAccessService,
   organizationsService: OrganizationsService,
 ): void {
   app.get("/organizations/:organizationId", async (request) => {
     const validatedRequest = validateRequest(getOrganizationRequestSchema, request);
     const auth = requireAuth(request, app);
+    const access = await organizationAccessService.verifyOrganizationMembership({
+      auth,
+      organizationId: validatedRequest.params.organizationId,
+    });
+
+    if (access.status === "not-member") {
+      throw app.httpErrors.forbidden("You do not have access to this organization.");
+    }
 
     if (
       !canReadOrganization({
-        organizationId: auth.organizationId,
-        requestedOrganizationId: validatedRequest.params.organizationId,
-        role: auth.organizationRole,
+        role: access.role,
       })
     ) {
       throw app.httpErrors.forbidden("You do not have access to this organization.");

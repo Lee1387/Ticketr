@@ -1,6 +1,8 @@
 import { buildApp } from "./app/buildApp.js";
 import { parseEnv } from "./app/config/env.js";
 import { createDatabaseConnection } from "./infrastructure/db/client.js";
+import { OrganizationAccessService } from "./modules/organizations/organizationAccess.service.js";
+import { OrganizationMembersRepository } from "./modules/organizations/organizationMembers.repository.js";
 import { OrganizationsRepository } from "./modules/organizations/organizations.repository.js";
 import { OrganizationsService } from "./modules/organizations/organizations.service.js";
 import { TicketsRepository } from "./modules/tickets/tickets.repository.js";
@@ -8,13 +10,18 @@ import { TicketsService } from "./modules/tickets/tickets.service.js";
 
 const env = parseEnv(process.env);
 const databaseConnection = createDatabaseConnection(env.DATABASE_URL);
+const organizationMembersRepository = new OrganizationMembersRepository(databaseConnection.db);
 const organizationsRepository = new OrganizationsRepository(databaseConnection.db);
 const ticketsRepository = new TicketsRepository(databaseConnection.db);
+const organizationAccessService = new OrganizationAccessService(organizationMembersRepository);
 const organizationsService = new OrganizationsService(organizationsRepository);
 const ticketsService = new TicketsService(organizationsRepository, ticketsRepository);
 const app = buildApp({
+  jwtAudience: env.JWT_AUDIENCE,
+  jwtIssuer: env.JWT_ISSUER,
   jwtSecret: env.JWT_SECRET,
   services: {
+    organizationAccessService,
     organizationsService,
     ticketsService,
   },

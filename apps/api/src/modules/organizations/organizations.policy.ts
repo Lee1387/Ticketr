@@ -1,4 +1,4 @@
-import type { OrganizationId, OrganizationMemberRole } from "./organizations.types.js";
+import type { OrganizationMemberRole } from "./organizations.types.js";
 
 const canReadOrganizationByRole: Record<OrganizationMemberRole, boolean> = {
   owner: true,
@@ -6,30 +6,22 @@ const canReadOrganizationByRole: Record<OrganizationMemberRole, boolean> = {
   agent: true,
 };
 
-type ScopedOrganizationAccessInput = {
-  organizationId: OrganizationId;
-  requestedOrganizationId: OrganizationId;
+type OrganizationPermissionInput = {
   role: OrganizationMemberRole;
 };
 
-export function canReadOrganization(input: ScopedOrganizationAccessInput): boolean {
-  return canReadScopedOrganizationResource(input);
+export function canReadOrganization(input: OrganizationPermissionInput): boolean {
+  return canReadOrganizationByRole[input.role];
 }
 
-export function canReadOrganizationTickets(input: ScopedOrganizationAccessInput): boolean {
-  return canReadScopedOrganizationResource(input);
+export function canReadOrganizationTickets(input: OrganizationPermissionInput): boolean {
+  return canReadOrganization(input);
 }
 
-export function canCreateOrganizationTicket(input: ScopedOrganizationAccessInput): boolean {
-  return canReadScopedOrganizationResource(input);
+export function canCreateOrganizationTicket(input: OrganizationPermissionInput): boolean {
+  return canReadOrganization(input);
 }
 
-export function canUpdateOrganizationTicketStatus(input: ScopedOrganizationAccessInput): boolean {
-  return canReadScopedOrganizationResource(input);
-}
-
-function canReadScopedOrganizationResource(input: ScopedOrganizationAccessInput): boolean {
-  return (
-    input.organizationId === input.requestedOrganizationId && canReadOrganizationByRole[input.role]
-  );
+export function canUpdateOrganizationTicketStatus(input: OrganizationPermissionInput): boolean {
+  return canReadOrganization(input);
 }

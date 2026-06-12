@@ -2,6 +2,7 @@ import type { FastifyInstance } from "fastify";
 
 import type { AppServices } from "../app/appServices.js";
 import { buildApp, type BuildAppOptions } from "../app/buildApp.js";
+import { OrganizationAccessService } from "../modules/organizations/organizationAccess.service.js";
 import {
   type OrganizationsRepositoryPort,
   OrganizationsService,
@@ -9,6 +10,8 @@ import {
 import { type TicketsRepositoryPort, TicketsService } from "../modules/tickets/tickets.service.js";
 
 type CreateTestAppOptions = {
+  jwtAudience?: string;
+  jwtIssuer?: string;
   jwtSecret?: string;
   services?: Partial<AppServices>;
 };
@@ -27,6 +30,10 @@ const defaultOrganizationsRepository: OrganizationsRepositoryPort = {
       ...defaultOrganization,
       id,
     }),
+};
+
+const defaultOrganizationMembershipLookup = {
+  findByOrganizationIdAndUserId: () => Promise.resolve({ role: "agent" as const }),
 };
 
 const defaultTicket = {
@@ -73,9 +80,14 @@ const defaultTicketsRepository: TicketsRepositoryPort = {
 };
 
 const defaultOrganizationsService = new OrganizationsService(defaultOrganizationsRepository);
+const defaultOrganizationAccessService = new OrganizationAccessService(
+  defaultOrganizationMembershipLookup,
+);
 
 export function createTestApp(options: CreateTestAppOptions = {}): FastifyInstance {
   const services: BuildAppOptions["services"] = {
+    organizationAccessService:
+      options.services?.organizationAccessService ?? defaultOrganizationAccessService,
     organizationsService: options.services?.organizationsService ?? defaultOrganizationsService,
     ticketsService:
       options.services?.ticketsService ??
@@ -83,6 +95,8 @@ export function createTestApp(options: CreateTestAppOptions = {}): FastifyInstan
   };
 
   return buildApp({
+    jwtAudience: options.jwtAudience ?? "ticketr-api",
+    jwtIssuer: options.jwtIssuer ?? "ticketr",
     jwtSecret: options.jwtSecret ?? "test-jwt-secret-with-at-least-thirty-two-characters",
     services,
   });

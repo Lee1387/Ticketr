@@ -10,6 +10,8 @@ import { registerRoutes } from "./routes/registerRoutes.js";
 export const requestBodyLimitBytes = 1_048_576;
 
 export type BuildAppOptions = {
+  jwtAudience: string;
+  jwtIssuer: string;
   jwtSecret: string;
   services: AppServices;
 };
@@ -25,6 +27,8 @@ export function buildApp(options: BuildAppOptions): FastifyInstance {
   registerSensiblePlugin(app);
   registerRequestIdPlugin(app);
   registerJwtAuthPlugin(app, {
+    jwtAudience: options.jwtAudience,
+    jwtIssuer: options.jwtIssuer,
     jwtSecret: options.jwtSecret,
   });
   registerRoutes(app, options.services);
