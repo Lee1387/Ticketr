@@ -1,6 +1,11 @@
 import type { OrganizationId } from "../../organizations/domain/organizations.types.js";
 import type { UserId } from "../../users/domain/users.types.js";
-import type { InvitationEmail, InvitationId, InvitationRole } from "../domain/invitations.types.js";
+import type {
+  InvitationEmail,
+  InvitationId,
+  InvitationRole,
+  ListInvitationsQueryInput,
+} from "../domain/invitations.types.js";
 import type { Invitation } from "./invitations.service.models.js";
 
 export type AcceptInvitationCommand = {
@@ -40,6 +45,21 @@ export type CreateInvitationResult =
     }
   | {
       status: "conflict";
+      message: string;
+    };
+
+export type ListInvitationsQuery = {
+  organizationId: OrganizationId;
+  query: ListInvitationsQueryInput;
+};
+
+export type ListInvitationsResult =
+  | {
+      status: "found";
+      invitations: Invitation[];
+    }
+  | {
+      status: "not-found";
       message: string;
     };
 

@@ -1,4 +1,4 @@
-import { and, eq } from "drizzle-orm";
+import { and, desc, eq, lt } from "drizzle-orm";
 
 import type { DatabaseClient } from "../../../infrastructure/db/client.js";
 import {
@@ -26,6 +26,30 @@ export class InvitationsRepository {
     }
 
     return invitation;
+  }
+
+  async listPendingByOrganizationId(input: {
+    createdBefore?: Date;
+    limit: number;
+    organizationId: OrganizationId;
+  }): Promise<InvitationRow[]> {
+    return this.db
+      .select()
+      .from(invitationsTable)
+      .where(
+        input.createdBefore === undefined
+          ? and(
+              eq(invitationsTable.organizationId, input.organizationId),
+              eq(invitationsTable.status, "pending"),
+            )
+          : and(
+              eq(invitationsTable.organizationId, input.organizationId),
+              eq(invitationsTable.status, "pending"),
+              lt(invitationsTable.createdAt, input.createdBefore),
+            ),
+      )
+      .orderBy(desc(invitationsTable.createdAt))
+      .limit(input.limit);
   }
 
   async findPendingByOrganizationIdAndEmail(input: {

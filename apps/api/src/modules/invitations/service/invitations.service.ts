@@ -5,6 +5,8 @@ import type {
   AcceptInvitationResult,
   CreateInvitationCommand,
   CreateInvitationResult,
+  ListInvitationsQuery,
+  ListInvitationsResult,
   RevokeInvitationCommand,
   RevokeInvitationResult,
 } from "./invitations.service.types.js";
@@ -15,6 +17,7 @@ import type {
   InvitationUserLookup,
   InvitationsRepositoryPort,
 } from "./invitations.service.ports.js";
+import { listInvitations } from "./listInvitations.service.js";
 import { revokeInvitation } from "./revokeInvitation.service.js";
 
 export class InvitationsService {
@@ -39,6 +42,13 @@ export class InvitationsService {
 
   async createInvitation(command: CreateInvitationCommand): Promise<CreateInvitationResult> {
     return createInvitation(command, {
+      invitationsRepository: this.invitationsRepository,
+      organizationLookup: this.organizationLookup,
+    });
+  }
+
+  async listInvitations(query: ListInvitationsQuery): Promise<ListInvitationsResult> {
+    return listInvitations(query, {
       invitationsRepository: this.invitationsRepository,
       organizationLookup: this.organizationLookup,
     });

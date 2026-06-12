@@ -11,14 +11,14 @@ export const devSeedData = {
   },
   user: {
     id: "11111111-1111-4111-8111-111111111111",
-    email: "agent@ticketr.local",
-    name: "Local Support Agent",
+    email: "admin@ticketr.local",
+    name: "Local Support Admin",
     passwordHash:
       "$argon2id$v=19$m=19456,t=2,p=1$Wk8d0gFTibmTODqKthmyrA$6ljON+2OHVrQoTsBGeT+izutYbua0N7d2PGcVob4SX8",
     status: "active" as const,
   },
   membership: {
-    role: "agent" as const,
+    role: "admin" as const,
   },
 };
 

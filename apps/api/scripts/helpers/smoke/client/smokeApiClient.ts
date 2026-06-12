@@ -26,14 +26,17 @@ export async function smokeJson<TSchema extends z.ZodType>(input: {
   authorizationHeader?: string;
   body?: unknown;
   expectedStatusCode: number;
-  method: "GET" | "PATCH" | "POST";
+  method: "DELETE" | "GET" | "PATCH" | "POST";
   name: string;
   path: string;
   schema: TSchema;
 }): Promise<SmokeJsonResult<z.infer<TSchema>>> {
   const requestInit: RequestInit = {
     method: input.method,
-    headers: buildSmokeApiHeaders(input.authorizationHeader),
+    headers: buildSmokeApiHeaders({
+      authorizationHeader: input.authorizationHeader,
+      hasJsonBody: input.body !== undefined,
+    }),
   };
 
   if (input.body !== undefined) {

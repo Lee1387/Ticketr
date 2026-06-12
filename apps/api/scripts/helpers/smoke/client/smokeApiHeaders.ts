@@ -1,10 +1,15 @@
-export function buildSmokeApiHeaders(authorizationHeader: string | undefined): Headers {
-  const headers = new Headers({
-    "content-type": "application/json",
-  });
+export function buildSmokeApiHeaders(input: {
+  authorizationHeader: string | undefined;
+  hasJsonBody: boolean;
+}): Headers {
+  const headers = new Headers();
 
-  if (authorizationHeader !== undefined) {
-    headers.set("authorization", authorizationHeader);
+  if (input.hasJsonBody) {
+    headers.set("content-type", "application/json");
+  }
+
+  if (input.authorizationHeader !== undefined) {
+    headers.set("authorization", input.authorizationHeader);
   }
 
   return headers;

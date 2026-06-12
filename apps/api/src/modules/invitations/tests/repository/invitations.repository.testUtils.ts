@@ -10,6 +10,8 @@ import { InvitationsRepository } from "../../persistence/invitations.repository.
 
 export const invitationRepositoryTestOrganizationId = "11111111-1111-4111-8111-111111111111";
 
+export const invitationRepositoryTestOtherOrganizationId = "99999999-9999-4999-8999-999999999999";
+
 export const invitationRepositoryTestExpiresAt = new Date("2030-01-01T00:00:00.000Z");
 
 export type InvitationsRepositoryTestContext = {
@@ -35,6 +37,11 @@ export function setupInvitationsRepositoryTest(): InvitationsRepositoryTestConte
     await db.insert(organizationsTable).values({
       id: invitationRepositoryTestOrganizationId,
       name: "Acme Support",
+      status: "active",
+    });
+    await db.insert(organizationsTable).values({
+      id: invitationRepositoryTestOtherOrganizationId,
+      name: "Other Support",
       status: "active",
     });
   });

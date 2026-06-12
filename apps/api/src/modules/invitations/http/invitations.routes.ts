@@ -4,6 +4,8 @@ import type { OrganizationAccessService } from "../../organizations/service/orga
 import type { InvitationsService } from "../service/invitations.service.js";
 import { registerAcceptInvitationRoute } from "./routes/registerAcceptInvitationRoute.js";
 import { registerCreateInvitationRoute } from "./routes/registerCreateInvitationRoute.js";
+import { registerListInvitationsRoute } from "./routes/registerListInvitationsRoute.js";
+import { registerRevokeInvitationRoute } from "./routes/registerRevokeInvitationRoute.js";
 
 export function registerInvitationRoutes(
   app: FastifyInstance,
@@ -12,4 +14,6 @@ export function registerInvitationRoutes(
 ): void {
   registerAcceptInvitationRoute(app, invitationsService);
   registerCreateInvitationRoute(app, organizationAccessService, invitationsService);
+  registerListInvitationsRoute(app, organizationAccessService, invitationsService);
+  registerRevokeInvitationRoute(app, organizationAccessService, invitationsService);
 }

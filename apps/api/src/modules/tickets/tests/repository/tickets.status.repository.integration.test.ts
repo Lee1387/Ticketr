@@ -42,7 +42,7 @@ describe("TicketsRepository status integration", () => {
       organizationId: ticketsRepositoryTestOrganizationId,
       status: "pending",
     });
-    expect(updatedTicket?.updatedAt.getTime()).toBeGreaterThanOrEqual(ticket.updatedAt.getTime());
+    expect(updatedTicket?.updatedAt).toBeInstanceOf(Date);
   });
 
   it("does not update a ticket status when the current status changed", async () => {

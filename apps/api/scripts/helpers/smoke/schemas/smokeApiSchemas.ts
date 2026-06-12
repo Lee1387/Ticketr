@@ -19,6 +19,24 @@ export const organizationResponseSchema = z.object({
   }),
 });
 
+export const invitationResponseSchema = z.object({
+  invitation: z.object({
+    acceptedAt: z.iso.datetime().nullable(),
+    createdAt: z.iso.datetime(),
+    email: z.email(),
+    expiresAt: z.iso.datetime(),
+    id: z.uuid(),
+    organizationId: z.uuid(),
+    role: z.string().min(1),
+    status: z.string().min(1),
+    updatedAt: z.iso.datetime(),
+  }),
+});
+
+export const invitationListResponseSchema = z.object({
+  invitations: z.array(invitationResponseSchema.shape.invitation),
+});
+
 export const ticketResponseSchema = z.object({
   ticket: z.object({
     id: z.uuid(),

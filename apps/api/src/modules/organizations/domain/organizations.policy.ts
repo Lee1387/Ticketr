@@ -6,7 +6,7 @@ const canReadOrganizationByRole: Record<OrganizationMemberRole, boolean> = {
   agent: true,
 };
 
-const canCreateOrganizationInvitationByRole: Record<OrganizationMemberRole, boolean> = {
+const canManageOrganizationInvitationsByRole: Record<OrganizationMemberRole, boolean> = {
   owner: true,
   admin: true,
   agent: false,
@@ -32,6 +32,6 @@ export function canUpdateOrganizationTicketStatus(input: OrganizationPermissionI
   return canReadOrganization(input);
 }
 
-export function canCreateOrganizationInvitation(input: OrganizationPermissionInput): boolean {
-  return canCreateOrganizationInvitationByRole[input.role];
+export function canManageOrganizationInvitations(input: OrganizationPermissionInput): boolean {
+  return canManageOrganizationInvitationsByRole[input.role];
 }

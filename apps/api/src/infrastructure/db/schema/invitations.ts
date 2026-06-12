@@ -23,6 +23,11 @@ export const invitationsTable = pgTable(
     updatedAt: timestamp("updated_at", { withTimezone: true }).defaultNow().notNull(),
   },
   (table) => [
+    index("invitations_organization_id_status_created_at_idx").on(
+      table.organizationId,
+      table.status,
+      table.createdAt,
+    ),
     index("invitations_organization_id_status_idx").on(table.organizationId, table.status),
     uniqueIndex("invitations_organization_id_email_pending_unique")
       .on(table.organizationId, table.email)

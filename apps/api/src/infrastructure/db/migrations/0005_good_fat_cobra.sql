@@ -1,0 +1,1 @@
+CREATE INDEX "invitations_organization_id_status_created_at_idx" ON "invitations" USING btree ("organization_id","status","created_at");

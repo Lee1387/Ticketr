@@ -1,6 +1,7 @@
 import { devSeedData } from "./helpers/seed/seedDevData.js";
 import { smokeGetJson } from "./helpers/smoke/client/smokeApiClient.js";
 import { runSmokeAuthFlow } from "./helpers/smoke/flows/smokeAuthFlow.js";
+import { runSmokeInvitationFlow } from "./helpers/smoke/flows/smokeInvitationFlow.js";
 import { runSmokeNegativeChecks } from "./helpers/smoke/flows/smokeNegativeChecks.js";
 import { runSmokeOrganizationFlow } from "./helpers/smoke/flows/smokeOrganizationFlow.js";
 import { runSmokeTicketFlow } from "./helpers/smoke/flows/smokeTicketFlow.js";
@@ -26,6 +27,12 @@ const authFlow = await runSmokeAuthFlow(organizationId);
 results.push(...authFlow.results);
 results.push(
   ...(await runSmokeOrganizationFlow({
+    authorizationHeader: authFlow.authorizationHeader,
+    organizationId,
+  })),
+);
+results.push(
+  ...(await runSmokeInvitationFlow({
     authorizationHeader: authFlow.authorizationHeader,
     organizationId,
   })),

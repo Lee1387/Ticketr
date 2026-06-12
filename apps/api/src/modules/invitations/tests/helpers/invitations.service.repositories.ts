@@ -16,6 +16,7 @@ export function createServiceTestInvitationsRepository(
 ): InvitationsRepositoryPort {
   return {
     create: vi.fn(() => Promise.resolve(invitationServiceTestInvitation)),
+    listPendingByOrganizationId: vi.fn(() => Promise.resolve([invitationServiceTestInvitation])),
     findPendingByOrganizationIdAndEmail: vi.fn(() => Promise.resolve(null)),
     findPendingById: vi.fn(() => Promise.resolve(invitationServiceTestInvitation)),
     revokePendingById: vi.fn(() => Promise.resolve(revokedInvitation)),

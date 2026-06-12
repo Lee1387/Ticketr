@@ -13,6 +13,13 @@ export const defaultTestInvitationsRepository: InvitationsRepositoryPort = {
       organizationId: input.organizationId,
       role: input.role,
     }),
+  listPendingByOrganizationId: (input) =>
+    Promise.resolve([
+      {
+        ...defaultTestInvitation,
+        organizationId: input.organizationId,
+      },
+    ]),
   findPendingByOrganizationIdAndEmail: () => Promise.resolve(null),
   findPendingById: (id) =>
     Promise.resolve({

@@ -30,6 +30,11 @@ export type InvitationsRepositoryPort = {
     organizationId: OrganizationId;
     role: InvitationRole;
   }) => Promise<Invitation>;
+  listPendingByOrganizationId: (input: {
+    createdBefore?: Date;
+    limit: number;
+    organizationId: OrganizationId;
+  }) => Promise<Invitation[]>;
   findPendingByOrganizationIdAndEmail: (input: {
     email: InvitationEmail;
     organizationId: OrganizationId;
