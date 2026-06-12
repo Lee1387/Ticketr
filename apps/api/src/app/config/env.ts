@@ -10,6 +10,7 @@ const envSchema = z.object({
   API_HOST: z.string().min(1).default("0.0.0.0"),
   API_PORT: portSchema,
   DATABASE_URL: z.url(),
+  JWT_SECRET: z.string().min(32),
 });
 
 export type ApiEnv = z.infer<typeof envSchema>;

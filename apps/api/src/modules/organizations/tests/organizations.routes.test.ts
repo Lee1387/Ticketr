@@ -1,5 +1,6 @@
 import { describe, expect, it, vi } from "vitest";
 
+import { createAuthHeaders } from "../../../test/authTestUtils.js";
 import { createTestApp } from "../../../test/createTestApp.js";
 import { OrganizationsService } from "../organizations.service.js";
 
@@ -27,11 +28,55 @@ describe("organization routes", () => {
       const response = await app.inject({
         method: "GET",
         url: `/organizations/${organization.id}`,
+        headers: await createAuthHeaders(app),
       });
 
       expect(response.statusCode).toBe(200);
       expect(response.json()).toEqual({
         organization: organizationResponse,
+      });
+    } finally {
+      await app.close();
+    }
+  });
+
+  it("requires authentication", async () => {
+    const app = createTestApp();
+
+    try {
+      const response = await app.inject({
+        method: "GET",
+        url: `/organizations/${organization.id}`,
+      });
+
+      expect(response.statusCode).toBe(401);
+      expect(response.json()).toEqual({
+        error: {
+          code: "UNAUTHORIZED",
+          message: "Authentication is required.",
+        },
+      });
+    } finally {
+      await app.close();
+    }
+  });
+
+  it("prevents access to another organization", async () => {
+    const app = createTestApp();
+
+    try {
+      const response = await app.inject({
+        method: "GET",
+        url: "/organizations/de4d1aba-8c93-4a2a-9844-856e5976da48",
+        headers: await createAuthHeaders(app),
+      });
+
+      expect(response.statusCode).toBe(403);
+      expect(response.json()).toEqual({
+        error: {
+          code: "FORBIDDEN",
+          message: "You do not have access to this organization.",
+        },
       });
     } finally {
       await app.close();
@@ -51,6 +96,7 @@ describe("organization routes", () => {
       const response = await app.inject({
         method: "GET",
         url: `/organizations/${organization.id}`,
+        headers: await createAuthHeaders(app),
       });
 
       expect(response.statusCode).toBe(404);

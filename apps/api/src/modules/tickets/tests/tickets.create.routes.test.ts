@@ -4,6 +4,7 @@ import { createTestApp } from "../../../test/createTestApp.js";
 import { TicketsService, type OrganizationLookup } from "../tickets.service.js";
 import {
   createRouteTestTicketsRepository,
+  createRouteTestAuthHeaders,
   routeTestOrganizationId,
   routeTestTicketResponse,
 } from "./tickets.routes.testUtils.js";
@@ -18,6 +19,7 @@ describe("ticket creation routes", () => {
         url: `/organizations/${routeTestOrganizationId}/tickets`,
         headers: {
           "content-type": "application/json",
+          ...(await createRouteTestAuthHeaders(app)),
         },
         payload: JSON.stringify({
           subject: "Cannot access account",
@@ -64,6 +66,36 @@ describe("ticket creation routes", () => {
     }
   });
 
+  it("prevents creating another organization's tickets", async () => {
+    const app = createTestApp();
+
+    try {
+      const response = await app.inject({
+        method: "POST",
+        url: "/organizations/de4d1aba-8c93-4a2a-9844-856e5976da48/tickets",
+        headers: {
+          "content-type": "application/json",
+          ...(await createRouteTestAuthHeaders(app)),
+        },
+        payload: JSON.stringify({
+          subject: "Cannot access account",
+          description: "The customer cannot sign in after resetting their password.",
+          priority: "high",
+        }),
+      });
+
+      expect(response.statusCode).toBe(403);
+      expect(response.json()).toEqual({
+        error: {
+          code: "FORBIDDEN",
+          message: "You do not have access to create tickets for this organization.",
+        },
+      });
+    } finally {
+      await app.close();
+    }
+  });
+
   it("returns not found when the target organization does not exist", async () => {
     const organizationLookup: OrganizationLookup = {
       findById: () => Promise.resolve(null),
@@ -80,6 +112,7 @@ describe("ticket creation routes", () => {
         url: `/organizations/${routeTestOrganizationId}/tickets`,
         headers: {
           "content-type": "application/json",
+          ...(await createRouteTestAuthHeaders(app)),
         },
         payload: JSON.stringify({
           subject: "Cannot access account",

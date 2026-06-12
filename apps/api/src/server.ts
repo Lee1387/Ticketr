@@ -13,6 +13,7 @@ const ticketsRepository = new TicketsRepository(databaseConnection.db);
 const organizationsService = new OrganizationsService(organizationsRepository);
 const ticketsService = new TicketsService(organizationsRepository, ticketsRepository);
 const app = buildApp({
+  jwtSecret: env.JWT_SECRET,
   services: {
     organizationsService,
     ticketsService,

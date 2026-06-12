@@ -9,6 +9,7 @@ import {
 import { type TicketsRepositoryPort, TicketsService } from "../modules/tickets/tickets.service.js";
 
 type CreateTestAppOptions = {
+  jwtSecret?: string;
   services?: Partial<AppServices>;
 };
 
@@ -82,6 +83,7 @@ export function createTestApp(options: CreateTestAppOptions = {}): FastifyInstan
   };
 
   return buildApp({
+    jwtSecret: options.jwtSecret ?? "test-jwt-secret-with-at-least-thirty-two-characters",
     services,
   });
 }
