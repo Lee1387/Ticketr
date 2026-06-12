@@ -6,10 +6,11 @@ describe("API environment config", () => {
   const databaseUrl = "postgres://ticketr:ticketr@localhost:5432/ticketr";
 
   it("uses safe local defaults", () => {
-    expect(parseEnv({})).toEqual({
+    expect(parseEnv({ DATABASE_URL: databaseUrl })).toEqual({
       NODE_ENV: "development",
       API_HOST: "0.0.0.0",
       API_PORT: 3000,
+      DATABASE_URL: databaseUrl,
     });
   });
 
@@ -35,5 +36,9 @@ describe("API environment config", () => {
         DATABASE_URL: "not-a-database-url",
       }),
     ).toThrow();
+  });
+
+  it("requires a database URL", () => {
+    expect(() => parseEnv({})).toThrow();
   });
 });

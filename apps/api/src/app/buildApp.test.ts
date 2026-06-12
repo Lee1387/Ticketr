@@ -1,10 +1,11 @@
 import { describe, expect, it } from "vitest";
 
-import { buildApp, requestBodyLimitBytes } from "./buildApp.js";
+import { createTestApp } from "../test/createTestApp.js";
+import { requestBodyLimitBytes } from "./buildApp.js";
 
 describe("buildApp", () => {
   it("rejects request bodies over the configured size limit", async () => {
-    const app = buildApp();
+    const app = createTestApp();
 
     try {
       app.post("/body-limit-test", () => {

@@ -3,13 +3,13 @@ import { Writable } from "node:stream";
 import Fastify from "fastify";
 import { describe, expect, it } from "vitest";
 
-import { buildApp } from "../buildApp.js";
+import { createTestApp } from "../../test/createTestApp.js";
 import { RequestValidationError } from "../validation/requestValidationError.js";
 import { registerErrorHandler } from "./errorHandler.js";
 
 describe("error handler", () => {
   it("returns safe details for sensible client errors", async () => {
-    const app = buildApp();
+    const app = createTestApp();
 
     try {
       app.get("/known-error", () => {
@@ -34,7 +34,7 @@ describe("error handler", () => {
   });
 
   it("returns safe details for request validation errors", async () => {
-    const app = buildApp();
+    const app = createTestApp();
 
     try {
       app.post("/validation-error", () => {
@@ -59,7 +59,7 @@ describe("error handler", () => {
   });
 
   it("hides unexpected error details", async () => {
-    const app = buildApp();
+    const app = createTestApp();
 
     try {
       app.get("/unexpected-error", () => {

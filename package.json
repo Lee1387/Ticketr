@@ -11,6 +11,7 @@
     "format": "prettier . --write",
     "format:check": "prettier . --check",
     "test": "pnpm -r --if-present run test",
+    "test:integration": "pnpm -r --if-present run test:integration",
     "build": "pnpm -r --if-present run build",
     "dev:api": "pnpm --filter @ticketr/api dev",
     "db:up": "docker compose up -d postgres",
