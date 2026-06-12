@@ -24,7 +24,10 @@ export const organizationMembersTable = pgTable(
     updatedAt: timestamp("updated_at", { withTimezone: true }).defaultNow().notNull(),
   },
   (table) => [
-    index("organization_members_organization_id_idx").on(table.organizationId),
+    index("organization_members_organization_id_created_at_idx").on(
+      table.organizationId,
+      table.createdAt,
+    ),
     uniqueIndex("organization_members_organization_id_user_id_unique").on(
       table.organizationId,
       table.userId,

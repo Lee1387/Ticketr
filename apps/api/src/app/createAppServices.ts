@@ -30,7 +30,10 @@ export function createAppServices(db: DatabaseClient): AppServices {
       invitationAcceptanceRepository,
     ),
     organizationAccessService: new OrganizationAccessService(organizationMembersRepository),
-    organizationsService: new OrganizationsService(organizationsRepository),
+    organizationsService: new OrganizationsService(
+      organizationsRepository,
+      organizationMembersRepository,
+    ),
     ticketsService: new TicketsService(organizationsRepository, ticketsRepository),
   };
 }

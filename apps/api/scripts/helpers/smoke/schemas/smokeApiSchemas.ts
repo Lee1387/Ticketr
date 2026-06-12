@@ -19,6 +19,19 @@ export const organizationResponseSchema = z.object({
   }),
 });
 
+export const organizationMemberListResponseSchema = z.object({
+  members: z.array(
+    z.object({
+      createdAt: z.iso.datetime(),
+      email: z.email(),
+      name: z.string().min(1),
+      role: z.string().min(1),
+      status: z.string().min(1),
+      userId: z.uuid(),
+    }),
+  ),
+});
+
 export const invitationResponseSchema = z.object({
   invitation: z.object({
     acceptedAt: z.iso.datetime().nullable(),

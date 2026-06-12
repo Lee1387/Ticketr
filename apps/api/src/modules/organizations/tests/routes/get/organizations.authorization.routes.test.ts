@@ -1,9 +1,9 @@
 import { describe, expect, it, vi } from "vitest";
 
-import { createAuthHeaders } from "../../../../test/authTestUtils.js";
-import { createTestApp } from "../../../../test/createTestApp.js";
-import { OrganizationAccessService } from "../../service/organizationAccess.service.js";
-import { organizationRouteTestOrganization } from "./organizations.routes.testUtils.js";
+import { createAuthHeaders } from "../../../../../test/authTestUtils.js";
+import { createTestApp } from "../../../../../test/createTestApp.js";
+import { OrganizationAccessService } from "../../../service/organizationAccess.service.js";
+import { organizationRouteTestOrganization } from "../organizations.routes.testUtils.js";
 
 describe("organization route authorization", () => {
   it("requires authentication", async () => {

@@ -1,17 +1,21 @@
 import { describe, expect, it, vi } from "vitest";
 
-import { createAuthHeaders } from "../../../../test/authTestUtils.js";
-import { createTestApp } from "../../../../test/createTestApp.js";
-import { OrganizationsService } from "../../service/organizations.service.js";
-import { organizationRouteTestOrganization } from "./organizations.routes.testUtils.js";
+import { createAuthHeaders } from "../../../../../test/authTestUtils.js";
+import { createTestApp } from "../../../../../test/createTestApp.js";
+import { defaultTestOrganizationMembersReader } from "../../../../../test/repositories/organizationsTestRepository.js";
+import { OrganizationsService } from "../../../service/organizations.service.js";
+import { organizationRouteTestOrganization } from "../organizations.routes.testUtils.js";
 
 describe("organization route not found handling", () => {
   it("returns not found when an organization does not exist", async () => {
     const app = createTestApp({
       services: {
-        organizationsService: new OrganizationsService({
-          findById: vi.fn(() => Promise.resolve(null)),
-        }),
+        organizationsService: new OrganizationsService(
+          {
+            findById: vi.fn(() => Promise.resolve(null)),
+          },
+          defaultTestOrganizationMembersReader,
+        ),
       },
     });
 

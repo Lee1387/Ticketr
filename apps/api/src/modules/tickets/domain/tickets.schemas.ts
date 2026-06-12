@@ -1,5 +1,6 @@
 import { z } from "zod";
 
+import { cursorPaginationQuerySchema } from "../../../shared/schemas/pagination.schemas.js";
 import { ticketPriorityValues, ticketStatusValues } from "../domain/tickets.constants.js";
 
 export { ticketPriorityValues, ticketStatusValues };
@@ -10,13 +11,7 @@ export const ticketPrioritySchema = z.enum(ticketPriorityValues);
 
 export const ticketIdSchema = z.uuid();
 
-export const listTicketsQuerySchema = z.object({
-  limit: z.coerce.number().int().min(1).max(100).default(20),
-  createdBefore: z.iso
-    .datetime()
-    .transform((value) => new Date(value))
-    .optional(),
-});
+export const listTicketsQuerySchema = cursorPaginationQuerySchema;
 
 export const createTicketSchema = z.object({
   subject: z.string().trim().min(1).max(160),

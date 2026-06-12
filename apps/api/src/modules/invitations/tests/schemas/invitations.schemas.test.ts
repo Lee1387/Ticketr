@@ -5,7 +5,6 @@ import {
   invitationEmailSchema,
   invitationRoleSchema,
   invitationStatusSchema,
-  listInvitationsQuerySchema,
 } from "../../domain/invitations.schemas.js";
 
 describe("invitation schemas", () => {
@@ -28,18 +27,6 @@ describe("invitation schemas", () => {
       email: "agent@ticketr.local",
       expiresAt: new Date("2026-01-08T00:00:00.000Z"),
       role: "agent",
-    });
-  });
-
-  it("parses list invitation query input", () => {
-    expect(
-      listInvitationsQuerySchema.parse({
-        createdBefore: "2026-01-02T00:00:00.000Z",
-        limit: "10",
-      }),
-    ).toEqual({
-      createdBefore: new Date("2026-01-02T00:00:00.000Z"),
-      limit: 10,
     });
   });
 

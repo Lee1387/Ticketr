@@ -1,4 +1,4 @@
-import type { Organization } from "../service/organizations.service.models.js";
+import type { Organization, OrganizationMember } from "../service/organizations.service.models.js";
 
 export type OrganizationResponse = {
   id: string;
@@ -15,5 +15,27 @@ export function toOrganizationResponse(organization: Organization): Organization
     status: organization.status,
     createdAt: organization.createdAt.toISOString(),
     updatedAt: organization.updatedAt.toISOString(),
+  };
+}
+
+export type OrganizationMemberResponse = {
+  createdAt: string;
+  email: string;
+  name: string;
+  role: OrganizationMember["role"];
+  status: OrganizationMember["status"];
+  userId: string;
+};
+
+export function toOrganizationMemberResponse(
+  member: OrganizationMember,
+): OrganizationMemberResponse {
+  return {
+    createdAt: member.createdAt.toISOString(),
+    email: member.email,
+    name: member.name,
+    role: member.role,
+    status: member.status,
+    userId: member.userId,
   };
 }

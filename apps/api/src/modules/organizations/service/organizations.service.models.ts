@@ -1,4 +1,9 @@
-import type { OrganizationId, OrganizationStatus } from "../domain/organizations.types.js";
+import type { UserEmail, UserId, UserStatus } from "../../users/domain/users.types.js";
+import type {
+  OrganizationId,
+  OrganizationMemberRole,
+  OrganizationStatus,
+} from "../domain/organizations.types.js";
 
 export type Organization = {
   id: OrganizationId;
@@ -6,4 +11,13 @@ export type Organization = {
   status: OrganizationStatus;
   createdAt: Date;
   updatedAt: Date;
+};
+
+export type OrganizationMember = {
+  createdAt: Date;
+  email: UserEmail;
+  name: string;
+  role: OrganizationMemberRole;
+  status: UserStatus;
+  userId: UserId;
 };

@@ -13,3 +13,12 @@ export const organizationRouteTestResponse = {
   createdAt: "2026-01-01T00:00:00.000Z",
   updatedAt: "2026-01-01T00:00:00.000Z",
 };
+
+export const organizationMemberRouteTestResponse = {
+  createdAt: "2026-01-01T00:00:00.000Z",
+  email: "agent@example.com",
+  name: "Support Agent",
+  role: "agent",
+  status: "active",
+  userId: "11111111-1111-4111-8111-111111111111",
+};

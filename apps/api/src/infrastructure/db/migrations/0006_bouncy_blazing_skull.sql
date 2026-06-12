@@ -1,0 +1,2 @@
+DROP INDEX "organization_members_organization_id_idx";--> statement-breakpoint
+CREATE INDEX "organization_members_organization_id_created_at_idx" ON "organization_members" USING btree ("organization_id","created_at");

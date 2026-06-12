@@ -1,11 +1,11 @@
 import { describe, expect, it } from "vitest";
 
-import { createAuthHeaders } from "../../../../test/authTestUtils.js";
-import { createTestApp } from "../../../../test/createTestApp.js";
+import { createAuthHeaders } from "../../../../../test/authTestUtils.js";
+import { createTestApp } from "../../../../../test/createTestApp.js";
 import {
   organizationRouteTestOrganization,
   organizationRouteTestResponse,
-} from "./organizations.routes.testUtils.js";
+} from "../organizations.routes.testUtils.js";
 
 describe("organization route success", () => {
   it("returns an organization", async () => {

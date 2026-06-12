@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 
-import { createTestApp } from "../../../../test/createTestApp.js";
+import { createTestApp } from "../../../../../test/createTestApp.js";
 
 describe("organization route validation", () => {
   it("rejects invalid organization identifiers", async () => {
