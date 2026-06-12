@@ -15,3 +15,7 @@ export const organizationStatusSchema = z.enum(organizationStatusValues);
 export const organizationMemberRoleSchema = z.enum(organizationMemberRoleValues);
 
 export const listOrganizationMembersQuerySchema = cursorPaginationQuerySchema;
+
+export const updateOrganizationMemberRoleSchema = z.object({
+  role: organizationMemberRoleSchema,
+});

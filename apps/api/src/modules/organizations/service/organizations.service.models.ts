@@ -21,3 +21,9 @@ export type OrganizationMember = {
   status: UserStatus;
   userId: UserId;
 };
+
+export type OrganizationMemberRoleAssignment = {
+  organizationId: OrganizationId;
+  role: OrganizationMemberRole;
+  userId: UserId;
+};

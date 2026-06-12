@@ -4,6 +4,7 @@ import type { OrganizationAccessService } from "../service/organizationAccess.se
 import type { OrganizationsService } from "../service/organizations.service.js";
 import { registerGetOrganizationRoute } from "./routes/registerGetOrganizationRoute.js";
 import { registerListOrganizationMembersRoute } from "./routes/registerListOrganizationMembersRoute.js";
+import { registerUpdateOrganizationMemberRoleRoute } from "./routes/registerUpdateOrganizationMemberRoleRoute.js";
 
 export function registerOrganizationRoutes(
   app: FastifyInstance,
@@ -12,4 +13,5 @@ export function registerOrganizationRoutes(
 ): void {
   registerGetOrganizationRoute(app, organizationAccessService, organizationsService);
   registerListOrganizationMembersRoute(app, organizationAccessService, organizationsService);
+  registerUpdateOrganizationMemberRoleRoute(app, organizationAccessService, organizationsService);
 }

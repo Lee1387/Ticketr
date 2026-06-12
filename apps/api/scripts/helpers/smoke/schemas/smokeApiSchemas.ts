@@ -32,6 +32,14 @@ export const organizationMemberListResponseSchema = z.object({
   ),
 });
 
+export const organizationMemberRoleResponseSchema = z.object({
+  member: z.object({
+    organizationId: z.uuid(),
+    role: z.string().min(1),
+    userId: z.uuid(),
+  }),
+});
+
 export const invitationResponseSchema = z.object({
   invitation: z.object({
     acceptedAt: z.iso.datetime().nullable(),

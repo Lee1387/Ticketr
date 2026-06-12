@@ -1,7 +1,9 @@
-import { smokeGetJson } from "../client/smokeApiClient.js";
+import { devSeedData } from "../../seed/seedDevData.js";
+import { smokeGetJson, smokeJson } from "../client/smokeApiClient.js";
 import { createSmokeResult, type SmokeResult } from "../reporting/smokeResult.js";
 import {
   organizationMemberListResponseSchema,
+  organizationMemberRoleResponseSchema,
   organizationResponseSchema,
 } from "../schemas/smokeApiSchemas.js";
 
@@ -25,6 +27,17 @@ export async function runSmokeOrganizationFlow(
     path: `/organizations/${input.organizationId}/members?limit=10`,
     schema: organizationMemberListResponseSchema,
   });
+  const memberRole = await smokeJson({
+    authorizationHeader: input.authorizationHeader,
+    body: {
+      role: devSeedData.membership.role,
+    },
+    expectedStatusCode: 200,
+    method: "PATCH",
+    name: "PATCH /organizations/:organizationId/members/:userId/role",
+    path: `/organizations/${input.organizationId}/members/${devSeedData.user.id}/role`,
+    schema: organizationMemberRoleResponseSchema,
+  });
 
   return [
     createSmokeResult(
@@ -36,6 +49,11 @@ export async function runSmokeOrganizationFlow(
       "GET /organizations/:organizationId/members",
       members.statusCode,
       `count=${String(members.data.members.length)}`,
+    ),
+    createSmokeResult(
+      "PATCH /organizations/:organizationId/members/:userId/role",
+      memberRole.statusCode,
+      `role=${memberRole.data.member.role}`,
     ),
   ];
 }

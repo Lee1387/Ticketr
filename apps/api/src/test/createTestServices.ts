@@ -9,6 +9,8 @@ import {
   defaultTestInvitationsRepository,
 } from "./repositories/invitationsTestRepository.js";
 import {
+  defaultTestOrganizationMemberRoleLookup,
+  defaultTestOrganizationMemberRoleUpdater,
   defaultTestOrganizationMembersReader,
   defaultTestOrganizationMembershipLookup,
   defaultTestOrganizationsRepository,
@@ -36,6 +38,8 @@ export function createTestServices(overrides: Partial<AppServices> = {}): AppSer
       new OrganizationsService(
         defaultTestOrganizationsRepository,
         defaultTestOrganizationMembersReader,
+        defaultTestOrganizationMemberRoleLookup,
+        defaultTestOrganizationMemberRoleUpdater,
       ),
     ticketsService:
       overrides.ticketsService ??

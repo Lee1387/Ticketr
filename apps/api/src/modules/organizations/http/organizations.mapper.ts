@@ -1,4 +1,8 @@
-import type { Organization, OrganizationMember } from "../service/organizations.service.models.js";
+import type {
+  Organization,
+  OrganizationMember,
+  OrganizationMemberRoleAssignment,
+} from "../service/organizations.service.models.js";
 
 export type OrganizationResponse = {
   id: string;
@@ -36,6 +40,22 @@ export function toOrganizationMemberResponse(
     name: member.name,
     role: member.role,
     status: member.status,
+    userId: member.userId,
+  };
+}
+
+export type OrganizationMemberRoleResponse = {
+  organizationId: string;
+  role: OrganizationMemberRoleAssignment["role"];
+  userId: string;
+};
+
+export function toOrganizationMemberRoleResponse(
+  member: OrganizationMemberRoleAssignment,
+): OrganizationMemberRoleResponse {
+  return {
+    organizationId: member.organizationId,
+    role: member.role,
     userId: member.userId,
   };
 }

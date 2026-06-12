@@ -1,5 +1,7 @@
 import type { OrganizationMembershipLookup } from "../../modules/organizations/service/organizationAccess.service.ports.js";
 import type {
+  OrganizationMemberRoleLookupPort,
+  OrganizationMemberRoleUpdaterPort,
   OrganizationMembersReaderPort,
   OrganizationsRepositoryPort,
 } from "../../modules/organizations/service/organizations.service.ports.js";
@@ -30,4 +32,17 @@ export const defaultTestOrganizationMembersReader: OrganizationMembersReaderPort
         userId: defaultTestUser.id,
       },
     ]),
+};
+
+export const defaultTestOrganizationMemberRoleLookup: OrganizationMemberRoleLookupPort = {
+  findRoleByOrganizationIdAndUserId: () => Promise.resolve({ role: "agent" }),
+};
+
+export const defaultTestOrganizationMemberRoleUpdater: OrganizationMemberRoleUpdaterPort = {
+  updateRoleByOrganizationIdAndUserId: (input) =>
+    Promise.resolve({
+      organizationId: input.organizationId,
+      role: input.role,
+      userId: input.userId,
+    }),
 };

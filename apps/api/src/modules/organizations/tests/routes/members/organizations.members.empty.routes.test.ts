@@ -2,7 +2,11 @@ import { describe, expect, it, vi } from "vitest";
 
 import { createAuthHeaders } from "../../../../../test/authTestUtils.js";
 import { createTestApp } from "../../../../../test/createTestApp.js";
-import { defaultTestOrganizationsRepository } from "../../../../../test/repositories/organizationsTestRepository.js";
+import {
+  defaultTestOrganizationMemberRoleLookup,
+  defaultTestOrganizationMemberRoleUpdater,
+  defaultTestOrganizationsRepository,
+} from "../../../../../test/repositories/organizationsTestRepository.js";
 import { OrganizationsService } from "../../../service/organizations.service.js";
 import { organizationRouteTestOrganization } from "../organizations.routes.testUtils.js";
 
@@ -10,9 +14,14 @@ describe("organization members route empty state", () => {
   it("returns an empty member list", async () => {
     const app = createTestApp({
       services: {
-        organizationsService: new OrganizationsService(defaultTestOrganizationsRepository, {
-          listByOrganizationId: vi.fn(() => Promise.resolve([])),
-        }),
+        organizationsService: new OrganizationsService(
+          defaultTestOrganizationsRepository,
+          {
+            listByOrganizationId: vi.fn(() => Promise.resolve([])),
+          },
+          defaultTestOrganizationMemberRoleLookup,
+          defaultTestOrganizationMemberRoleUpdater,
+        ),
       },
     });
 

@@ -1,3 +1,6 @@
+import { OrganizationAccessService } from "../../service/organizationAccess.service.js";
+import type { OrganizationMemberRole } from "../../domain/organizations.types.js";
+
 export const organizationRouteTestOrganization = {
   id: "6b4df69e-0950-4209-b79a-a5b5d251540f",
   name: "Acme Support",
@@ -22,3 +25,13 @@ export const organizationMemberRouteTestResponse = {
   status: "active",
   userId: "11111111-1111-4111-8111-111111111111",
 };
+
+export const organizationMemberRoleRouteTestUserId = "22222222-2222-4222-8222-222222222222";
+
+export function createOrganizationRouteAccessService(
+  role: OrganizationMemberRole,
+): OrganizationAccessService {
+  return new OrganizationAccessService({
+    findByOrganizationIdAndUserId: () => Promise.resolve({ role }),
+  });
+}

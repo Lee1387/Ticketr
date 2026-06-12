@@ -33,6 +33,8 @@ export function createAppServices(db: DatabaseClient): AppServices {
     organizationsService: new OrganizationsService(
       organizationsRepository,
       organizationMembersRepository,
+      organizationMembersRepository,
+      organizationMembersRepository,
     ),
     ticketsService: new TicketsService(organizationsRepository, ticketsRepository),
   };

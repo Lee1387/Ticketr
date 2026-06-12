@@ -2,7 +2,11 @@ import { describe, expect, it, vi } from "vitest";
 
 import { createAuthHeaders } from "../../../../../test/authTestUtils.js";
 import { createTestApp } from "../../../../../test/createTestApp.js";
-import { defaultTestOrganizationMembersReader } from "../../../../../test/repositories/organizationsTestRepository.js";
+import {
+  defaultTestOrganizationMemberRoleLookup,
+  defaultTestOrganizationMemberRoleUpdater,
+  defaultTestOrganizationMembersReader,
+} from "../../../../../test/repositories/organizationsTestRepository.js";
 import { OrganizationsService } from "../../../service/organizations.service.js";
 import { organizationRouteTestOrganization } from "../organizations.routes.testUtils.js";
 
@@ -15,6 +19,8 @@ describe("organization route not found handling", () => {
             findById: vi.fn(() => Promise.resolve(null)),
           },
           defaultTestOrganizationMembersReader,
+          defaultTestOrganizationMemberRoleLookup,
+          defaultTestOrganizationMemberRoleUpdater,
         ),
       },
     });

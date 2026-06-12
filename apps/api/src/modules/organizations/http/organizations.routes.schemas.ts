@@ -3,7 +3,9 @@ import { z } from "zod";
 import {
   listOrganizationMembersQuerySchema,
   organizationIdSchema,
+  updateOrganizationMemberRoleSchema,
 } from "../domain/organizations.schemas.js";
+import { userIdSchema } from "../../users/domain/users.schemas.js";
 
 export const getOrganizationRequestSchema = z.object({
   body: z.undefined(),
@@ -19,4 +21,13 @@ export const listOrganizationMembersRequestSchema = z.object({
     organizationId: organizationIdSchema,
   }),
   query: listOrganizationMembersQuerySchema,
+});
+
+export const updateOrganizationMemberRoleRequestSchema = z.object({
+  body: updateOrganizationMemberRoleSchema,
+  params: z.object({
+    organizationId: organizationIdSchema,
+    userId: userIdSchema,
+  }),
+  query: z.object({}),
 });

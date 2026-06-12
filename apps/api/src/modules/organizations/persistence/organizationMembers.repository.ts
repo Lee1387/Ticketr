@@ -18,6 +18,12 @@ export type OrganizationMemberListRecord = {
   userId: UserId;
 };
 
+export type OrganizationMemberRoleRecord = {
+  organizationId: OrganizationId;
+  role: OrganizationMemberRole;
+  userId: UserId;
+};
+
 export class OrganizationMembersRepository {
   constructor(private readonly db: DatabaseClient) {}
 
@@ -35,6 +41,54 @@ export class OrganizationMembersRepository {
         ),
       )
       .limit(1);
+
+    return rows[0] ?? null;
+  }
+
+  async findRoleByOrganizationIdAndUserId(input: {
+    organizationId: OrganizationId;
+    userId: UserId;
+  }): Promise<{ role: OrganizationMemberRole } | null> {
+    const rows = await this.db
+      .select({
+        role: organizationMembersTable.role,
+      })
+      .from(organizationMembersTable)
+      .where(
+        and(
+          eq(organizationMembersTable.organizationId, input.organizationId),
+          eq(organizationMembersTable.userId, input.userId),
+        ),
+      )
+      .limit(1);
+
+    return rows[0] ?? null;
+  }
+
+  async updateRoleByOrganizationIdAndUserId(input: {
+    currentRole: OrganizationMemberRole;
+    organizationId: OrganizationId;
+    role: OrganizationMemberRole;
+    userId: UserId;
+  }): Promise<OrganizationMemberRoleRecord | null> {
+    const rows = await this.db
+      .update(organizationMembersTable)
+      .set({
+        role: input.role,
+        updatedAt: new Date(),
+      })
+      .where(
+        and(
+          eq(organizationMembersTable.organizationId, input.organizationId),
+          eq(organizationMembersTable.userId, input.userId),
+          eq(organizationMembersTable.role, input.currentRole),
+        ),
+      )
+      .returning({
+        organizationId: organizationMembersTable.organizationId,
+        role: organizationMembersTable.role,
+        userId: organizationMembersTable.userId,
+      });
 
     return rows[0] ?? null;
   }

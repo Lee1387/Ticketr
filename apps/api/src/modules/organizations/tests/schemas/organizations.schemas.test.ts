@@ -6,6 +6,7 @@ import {
   organizationMemberRoleValues,
   organizationStatusSchema,
   organizationStatusValues,
+  updateOrganizationMemberRoleSchema,
 } from "../../domain/organizations.schemas.js";
 
 describe("organization schemas", () => {
@@ -41,5 +42,15 @@ describe("organization schemas", () => {
 
   it("rejects customer as an organization member role", () => {
     expect(organizationMemberRoleSchema.safeParse("customer").success).toBe(false);
+  });
+
+  it("parses update organization member role input", () => {
+    expect(
+      updateOrganizationMemberRoleSchema.parse({
+        role: "admin",
+      }),
+    ).toEqual({
+      role: "admin",
+    });
   });
 });
