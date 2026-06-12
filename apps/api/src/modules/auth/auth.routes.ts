@@ -8,6 +8,11 @@ import type { AuthService } from "./auth.service.js";
 
 const invalidLoginMessage = "Invalid email, password, or organization.";
 
+const loginRateLimitOptions = {
+  max: 5,
+  timeWindow: "1 minute",
+};
+
 const createDevelopmentTokenRequestSchema = z.object({
   body: createDevelopmentTokenSchema,
   params: z.object({}),
@@ -30,7 +35,7 @@ export function registerAuthRoutes(
   organizationAccessService: OrganizationAccessService,
   options: RegisterAuthRoutesOptions,
 ): void {
-  app.post("/auth/login", async (request) => {
+  app.post("/auth/login", { preHandler: app.rateLimit(loginRateLimitOptions) }, async (request) => {
     const validatedRequest = validateRequest(loginRequestSchema, request);
     const loginResult = await authService.login({
       email: validatedRequest.body.email,

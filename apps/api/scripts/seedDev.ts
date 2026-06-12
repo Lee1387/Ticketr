@@ -1,9 +1,8 @@
-import { z } from "zod";
-
 import { createDatabaseConnection } from "../src/infrastructure/db/client.js";
+import { postgresConnectionStringSchema } from "../src/shared/config/connectionStringSchemas.js";
 import { devSeedData, seedDevDatabase } from "./helpers/seedDevData.js";
 
-const databaseUrl = z.url().parse(process.env["DATABASE_URL"]);
+const databaseUrl = postgresConnectionStringSchema.parse(process.env["DATABASE_URL"]);
 const connection = createDatabaseConnection(databaseUrl);
 
 try {
