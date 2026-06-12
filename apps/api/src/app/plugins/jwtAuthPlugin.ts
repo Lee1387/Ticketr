@@ -1,7 +1,7 @@
 import jwt from "@fastify/jwt";
 import type { FastifyInstance, FastifyRequest } from "fastify";
 
-import type { AuthService } from "../../modules/auth/auth.service.js";
+import type { AuthService } from "../../modules/auth/service/auth.service.js";
 import {
   jwtAuthClaimsSchema,
   type AuthenticatedUser,

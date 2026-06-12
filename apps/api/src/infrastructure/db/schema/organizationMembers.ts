@@ -1,6 +1,6 @@
 import { index, pgEnum, pgTable, timestamp, uniqueIndex, uuid } from "drizzle-orm/pg-core";
 
-import { organizationMemberRoleValues } from "../../../modules/organizations/organizations.constants.js";
+import { organizationMemberRoleValues } from "../../../modules/organizations/domain/organizations.constants.js";
 import { organizationsTable } from "./organizations.js";
 import { usersTable } from "./users.js";
 

@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 
-import { AuthService } from "../../../modules/auth/auth.service.js";
+import { AuthService } from "../../../modules/auth/service/auth.service.js";
 import { createAuthHeaders } from "../../../test/authTestUtils.js";
 import { createTestApp } from "../../../test/createTestApp.js";
 import { invalidTokenResponse, registerProtectedTestRoute } from "./jwtAuthPlugin.testUtils.js";

@@ -4,7 +4,7 @@ import { organizationMembersTable } from "../../src/infrastructure/db/schema/org
 import { organizationsTable } from "../../src/infrastructure/db/schema/organizations.js";
 import { usersTable } from "../../src/infrastructure/db/schema/users.js";
 import { createTestDatabase, type TestDatabase } from "../../src/test/createTestDatabase.js";
-import { seedDevDatabase } from "../helpers/seedDevData.js";
+import { seedDevDatabase } from "../helpers/seed/seedDevData.js";
 
 describe("seedDevDatabase integration", () => {
   let testDatabase: TestDatabase | undefined;

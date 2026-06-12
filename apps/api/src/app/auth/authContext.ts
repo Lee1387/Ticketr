@@ -1,10 +1,11 @@
 import { z } from "zod";
 
-import { organizationIdSchema } from "../../modules/organizations/organizations.schemas.js";
+import { organizationIdSchema } from "../../modules/organizations/domain/organizations.schemas.js";
+import { userIdSchema } from "../../modules/users/domain/users.schemas.js";
 
 export const authenticatedUserSchema = z.object({
   organizationId: organizationIdSchema,
-  userId: z.uuid(),
+  userId: userIdSchema,
 });
 
 export const jwtAuthClaimsSchema = authenticatedUserSchema

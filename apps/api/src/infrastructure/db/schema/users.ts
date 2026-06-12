@@ -1,6 +1,6 @@
 import { pgEnum, pgTable, timestamp, uniqueIndex, uuid, varchar } from "drizzle-orm/pg-core";
 
-import { userStatusValues } from "../../../modules/users/users.constants.js";
+import { userStatusValues } from "../../../modules/users/domain/users.constants.js";
 
 export const userStatusEnum = pgEnum("user_status", userStatusValues);
 
