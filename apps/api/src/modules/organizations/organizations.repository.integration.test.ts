@@ -1,56 +1,36 @@
-import { fileURLToPath } from "node:url";
-
-import { PostgreSqlContainer, type StartedPostgreSqlContainer } from "@testcontainers/postgresql";
-import { migrate } from "drizzle-orm/postgres-js/migrator";
 import { afterAll, beforeAll, describe, expect, it } from "vitest";
 
-import {
-  createDatabaseConnection,
-  type DatabaseConnection,
-} from "../../infrastructure/db/client.js";
 import { organizationsTable } from "../../infrastructure/db/schema/organizations.js";
+import { createTestDatabase, type TestDatabase } from "../../test/createTestDatabase.js";
 import { OrganizationsRepository } from "./organizations.repository.js";
 
-const migrationsFolder = fileURLToPath(
-  new URL("../../infrastructure/db/migrations/", import.meta.url),
-);
-
 describe("OrganizationsRepository integration", () => {
-  let container: StartedPostgreSqlContainer | undefined;
-  let connection: DatabaseConnection | undefined;
+  let testDatabase: TestDatabase | undefined;
 
   beforeAll(async () => {
-    container = await new PostgreSqlContainer("postgres:18.4-alpine")
-      .withDatabase("ticketr_test")
-      .withUsername("ticketr")
-      .withPassword("ticketr")
-      .start();
-
-    connection = createDatabaseConnection(container.getConnectionUri());
-    await migrate(connection.db, { migrationsFolder });
+    testDatabase = await createTestDatabase();
   }, 120_000);
 
   afterAll(async () => {
-    await connection?.close();
-    await container?.stop();
+    await testDatabase?.stop();
   }, 30_000);
 
   function getRepository(): OrganizationsRepository {
-    if (connection === undefined) {
-      throw new Error("Database connection was not initialized.");
+    if (testDatabase === undefined) {
+      throw new Error("Test database was not initialized.");
     }
 
-    return new OrganizationsRepository(connection.db);
+    return new OrganizationsRepository(testDatabase.connection.db);
   }
 
   it("finds an organization by id", async () => {
-    if (connection === undefined) {
-      throw new Error("Database connection was not initialized.");
+    if (testDatabase === undefined) {
+      throw new Error("Test database was not initialized.");
     }
 
     const organizationId = "22222222-2222-4222-8222-222222222222";
 
-    await connection.db.insert(organizationsTable).values({
+    await testDatabase.connection.db.insert(organizationsTable).values({
       id: organizationId,
       name: "Acme Support",
       status: "active",
