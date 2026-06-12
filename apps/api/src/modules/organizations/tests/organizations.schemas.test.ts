@@ -6,7 +6,7 @@ import {
   organizationMemberRoleValues,
   organizationStatusSchema,
   organizationStatusValues,
-} from "./organizations.schemas.js";
+} from "../organizations.schemas.js";
 
 describe("organization schemas", () => {
   it("accepts UUID organization identifiers", () => {

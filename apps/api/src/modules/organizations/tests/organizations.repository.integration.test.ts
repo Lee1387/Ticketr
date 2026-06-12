@@ -1,8 +1,8 @@
 import { afterAll, beforeAll, describe, expect, it } from "vitest";
 
-import { organizationsTable } from "../../infrastructure/db/schema/organizations.js";
-import { createTestDatabase, type TestDatabase } from "../../test/createTestDatabase.js";
-import { OrganizationsRepository } from "./organizations.repository.js";
+import { organizationsTable } from "../../../infrastructure/db/schema/organizations.js";
+import { createTestDatabase, type TestDatabase } from "../../../test/createTestDatabase.js";
+import { OrganizationsRepository } from "../organizations.repository.js";
 
 describe("OrganizationsRepository integration", () => {
   let testDatabase: TestDatabase | undefined;
