@@ -6,9 +6,9 @@ describe("API environment config", () => {
   const databaseUrl = "postgres://ticketr:ticketr@localhost:5432/ticketr";
   const jwtSecret = "test-jwt-secret-with-at-least-thirty-two-characters";
 
-  it("uses safe local defaults", () => {
+  it("uses safe defaults", () => {
     expect(parseEnv({ DATABASE_URL: databaseUrl, JWT_SECRET: jwtSecret })).toEqual({
-      NODE_ENV: "development",
+      NODE_ENV: "production",
       API_HOST: "0.0.0.0",
       API_PORT: 3000,
       DATABASE_URL: databaseUrl,

@@ -1,7 +1,12 @@
 import jwt from "@fastify/jwt";
-import type { FastifyInstance } from "fastify";
+import type { FastifyInstance, FastifyRequest } from "fastify";
 
-import { jwtAuthClaimsSchema, type AuthenticatedUser } from "../auth/authContext.js";
+import type { AuthService } from "../../modules/auth/auth.service.js";
+import {
+  jwtAuthClaimsSchema,
+  type AuthenticatedUser,
+  type JwtAuthClaims,
+} from "../auth/authContext.js";
 
 declare module "fastify" {
   interface FastifyRequest {
@@ -10,6 +15,7 @@ declare module "fastify" {
 }
 
 export type JwtAuthPluginOptions = {
+  authService: AuthService;
   jwtAudience: string;
   jwtIssuer: string;
   jwtSecret: string;
@@ -39,15 +45,27 @@ export function registerJwtAuthPlugin(app: FastifyInstance, options: JwtAuthPlug
       return;
     }
 
-    try {
-      const payload = await request.jwtVerify<Record<string, unknown>>();
-      const claims = jwtAuthClaimsSchema.parse(payload);
-      request.auth = {
-        organizationId: claims.organizationId,
-        userId: claims.userId,
-      };
-    } catch {
+    const claims = await verifyJwtClaims(request).catch(() => {
+      throw app.httpErrors.unauthorized("Authentication token is invalid.");
+    });
+
+    const userVerification = await options.authService.verifyAuthenticatedUser({
+      userId: claims.userId,
+    });
+
+    if (userVerification.status === "invalid") {
       throw app.httpErrors.unauthorized("Authentication token is invalid.");
     }
+
+    request.auth = {
+      organizationId: claims.organizationId,
+      userId: claims.userId,
+    };
   });
+}
+
+async function verifyJwtClaims(request: FastifyRequest): Promise<JwtAuthClaims> {
+  const payload = await request.jwtVerify<Record<string, unknown>>();
+
+  return jwtAuthClaimsSchema.parse(payload);
 }

@@ -2,6 +2,7 @@ import { index, pgEnum, pgTable, timestamp, uniqueIndex, uuid } from "drizzle-or
 
 import { organizationMemberRoleValues } from "../../../modules/organizations/organizations.constants.js";
 import { organizationsTable } from "./organizations.js";
+import { usersTable } from "./users.js";
 
 export const organizationMemberRoleEnum = pgEnum(
   "organization_member_role",
@@ -15,7 +16,9 @@ export const organizationMembersTable = pgTable(
     organizationId: uuid("organization_id")
       .notNull()
       .references(() => organizationsTable.id, { onDelete: "cascade" }),
-    userId: uuid("user_id").notNull(),
+    userId: uuid("user_id")
+      .notNull()
+      .references(() => usersTable.id, { onDelete: "cascade" }),
     role: organizationMemberRoleEnum("role").notNull(),
     createdAt: timestamp("created_at", { withTimezone: true }).defaultNow().notNull(),
     updatedAt: timestamp("updated_at", { withTimezone: true }).defaultNow().notNull(),

@@ -2,6 +2,7 @@ import { afterAll, beforeAll, describe, expect, it } from "vitest";
 
 import { organizationMembersTable } from "../../../infrastructure/db/schema/organizationMembers.js";
 import { organizationsTable } from "../../../infrastructure/db/schema/organizations.js";
+import { usersTable } from "../../../infrastructure/db/schema/users.js";
 import { createTestDatabase, type TestDatabase } from "../../../test/createTestDatabase.js";
 import { OrganizationMembersRepository } from "../organizationMembers.repository.js";
 
@@ -35,6 +36,13 @@ describe("OrganizationMembersRepository integration", () => {
     await testDatabase.connection.db.insert(organizationsTable).values({
       id: organizationId,
       name: "Acme Support",
+      status: "active",
+    });
+
+    await testDatabase.connection.db.insert(usersTable).values({
+      id: userId,
+      email: "agent@example.com",
+      name: "Support Agent",
       status: "active",
     });
 

@@ -6,7 +6,7 @@ const portSchema = z.preprocess(
 );
 
 const envSchema = z.object({
-  NODE_ENV: z.enum(["development", "test", "production"]).default("development"),
+  NODE_ENV: z.enum(["development", "test", "production"]).default("production"),
   API_HOST: z.string().min(1).default("0.0.0.0"),
   API_PORT: portSchema,
   DATABASE_URL: z.url(),

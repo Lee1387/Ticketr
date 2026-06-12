@@ -6,6 +6,7 @@ import {
   signTestAuthToken,
 } from "../../test/authTestUtils.js";
 import { createTestApp } from "../../test/createTestApp.js";
+import { AuthService } from "../../modules/auth/auth.service.js";
 
 describe("JWT auth plugin", () => {
   it("sets auth context from a valid bearer token", async () => {
@@ -213,6 +214,74 @@ describe("JWT auth plugin", () => {
         headers: {
           authorization: `Bearer ${token}`,
         },
+      });
+
+      expect(response.statusCode).toBe(401);
+      expect(response.json()).toEqual({
+        error: {
+          code: "UNAUTHORIZED",
+          message: "Authentication token is invalid.",
+        },
+      });
+    } finally {
+      await app.close();
+    }
+  });
+
+  it("rejects bearer tokens for missing users", async () => {
+    const app = createTestApp({
+      services: {
+        authService: new AuthService({
+          findById: () => Promise.resolve(null),
+        }),
+      },
+    });
+
+    try {
+      app.get("/auth-context-test", () => {
+        return {
+          status: "ok",
+        };
+      });
+
+      const response = await app.inject({
+        method: "GET",
+        url: "/auth-context-test",
+        headers: await createAuthHeaders(app),
+      });
+
+      expect(response.statusCode).toBe(401);
+      expect(response.json()).toEqual({
+        error: {
+          code: "UNAUTHORIZED",
+          message: "Authentication token is invalid.",
+        },
+      });
+    } finally {
+      await app.close();
+    }
+  });
+
+  it("rejects bearer tokens for suspended users", async () => {
+    const app = createTestApp({
+      services: {
+        authService: new AuthService({
+          findById: () => Promise.resolve({ status: "suspended" as const }),
+        }),
+      },
+    });
+
+    try {
+      app.get("/auth-context-test", () => {
+        return {
+          status: "ok",
+        };
+      });
+
+      const response = await app.inject({
+        method: "GET",
+        url: "/auth-context-test",
+        headers: await createAuthHeaders(app),
       });
 
       expect(response.statusCode).toBe(401);

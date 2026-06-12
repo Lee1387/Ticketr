@@ -13,13 +13,15 @@ export type BuildAppOptions = {
   jwtAudience: string;
   jwtIssuer: string;
   jwtSecret: string;
+  logger?: boolean;
+  nodeEnv: "development" | "test" | "production";
   services: AppServices;
 };
 
 export function buildApp(options: BuildAppOptions): FastifyInstance {
   const app = Fastify({
     bodyLimit: requestBodyLimitBytes,
-    logger: true,
+    logger: options.logger ?? options.nodeEnv !== "test",
     ...buildRequestIdOptions(),
   });
 
@@ -27,11 +29,14 @@ export function buildApp(options: BuildAppOptions): FastifyInstance {
   registerSensiblePlugin(app);
   registerRequestIdPlugin(app);
   registerJwtAuthPlugin(app, {
+    authService: options.services.authService,
     jwtAudience: options.jwtAudience,
     jwtIssuer: options.jwtIssuer,
     jwtSecret: options.jwtSecret,
   });
-  registerRoutes(app, options.services);
+  registerRoutes(app, options.services, {
+    enableDevelopmentAuthRoutes: options.nodeEnv === "development",
+  });
 
   return app;
 }

@@ -16,7 +16,10 @@
     "dev:api": "pnpm --filter @ticketr/api dev",
     "db:up": "docker compose up -d postgres",
     "db:down": "docker compose down",
-    "db:logs": "docker compose logs -f postgres"
+    "db:logs": "docker compose logs -f postgres",
+    "db:seed": "pnpm --filter @ticketr/api db:seed",
+    "dev:token": "pnpm --filter @ticketr/api dev:token",
+    "smoke:api": "pnpm --filter @ticketr/api smoke:api"
   },
   "engines": {
     "node": ">=24.0.0 <25",

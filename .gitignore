@@ -6,6 +6,7 @@ coverage/
 .turbo/
 .cache/
 .vite/
+.tmp/
 
 .DS_Store
 Thumbs.db

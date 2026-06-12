@@ -2,6 +2,7 @@ import type { FastifyInstance } from "fastify";
 
 import type { AppServices } from "../app/appServices.js";
 import { buildApp, type BuildAppOptions } from "../app/buildApp.js";
+import { AuthService } from "../modules/auth/auth.service.js";
 import { OrganizationAccessService } from "../modules/organizations/organizationAccess.service.js";
 import {
   type OrganizationsRepositoryPort,
@@ -13,6 +14,7 @@ type CreateTestAppOptions = {
   jwtAudience?: string;
   jwtIssuer?: string;
   jwtSecret?: string;
+  nodeEnv?: BuildAppOptions["nodeEnv"];
   services?: Partial<AppServices>;
 };
 
@@ -34,6 +36,10 @@ const defaultOrganizationsRepository: OrganizationsRepositoryPort = {
 
 const defaultOrganizationMembershipLookup = {
   findByOrganizationIdAndUserId: () => Promise.resolve({ role: "agent" as const }),
+};
+
+const defaultAuthenticatedUserLookup = {
+  findById: () => Promise.resolve({ status: "active" as const }),
 };
 
 const defaultTicket = {
@@ -80,12 +86,14 @@ const defaultTicketsRepository: TicketsRepositoryPort = {
 };
 
 const defaultOrganizationsService = new OrganizationsService(defaultOrganizationsRepository);
+const defaultAuthService = new AuthService(defaultAuthenticatedUserLookup);
 const defaultOrganizationAccessService = new OrganizationAccessService(
   defaultOrganizationMembershipLookup,
 );
 
 export function createTestApp(options: CreateTestAppOptions = {}): FastifyInstance {
   const services: BuildAppOptions["services"] = {
+    authService: options.services?.authService ?? defaultAuthService,
     organizationAccessService:
       options.services?.organizationAccessService ?? defaultOrganizationAccessService,
     organizationsService: options.services?.organizationsService ?? defaultOrganizationsService,
@@ -98,6 +106,8 @@ export function createTestApp(options: CreateTestAppOptions = {}): FastifyInstan
     jwtAudience: options.jwtAudience ?? "ticketr-api",
     jwtIssuer: options.jwtIssuer ?? "ticketr",
     jwtSecret: options.jwtSecret ?? "test-jwt-secret-with-at-least-thirty-two-characters",
+    logger: false,
+    nodeEnv: options.nodeEnv ?? "test",
     services,
   });
 }

@@ -17,3 +17,5 @@ export const jwtAuthClaimsSchema = authenticatedUserSchema
   .refine((claims) => claims.exp > claims.iat);
 
 export type AuthenticatedUser = z.infer<typeof authenticatedUserSchema>;
+
+export type JwtAuthClaims = z.infer<typeof jwtAuthClaimsSchema>;
