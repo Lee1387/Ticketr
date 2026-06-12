@@ -1,4 +1,4 @@
-import type { Ticket } from "./tickets.service.js";
+import type { Ticket } from "./tickets.service.types.js";
 
 export type TicketResponse = {
   id: string;

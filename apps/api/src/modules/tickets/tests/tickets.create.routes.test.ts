@@ -1,7 +1,8 @@
 import { describe, expect, it } from "vitest";
 
 import { createTestApp } from "../../../test/createTestApp.js";
-import { TicketsService, type OrganizationLookup } from "../tickets.service.js";
+import { TicketsService } from "../tickets.service.js";
+import type { OrganizationLookup } from "../tickets.service.types.js";
 import {
   createRouteTestTicketsRepository,
   createRouteTestAuthHeaders,

@@ -1,10 +1,10 @@
 import { afterAll, beforeAll, describe, expect, it } from "vitest";
 
-import { organizationMembersTable } from "./schema/organizationMembers.js";
-import { organizationsTable } from "./schema/organizations.js";
-import { usersTable } from "./schema/users.js";
-import { seedDevDatabase } from "./seedDevData.js";
-import { createTestDatabase, type TestDatabase } from "../../test/createTestDatabase.js";
+import { organizationMembersTable } from "../../src/infrastructure/db/schema/organizationMembers.js";
+import { organizationsTable } from "../../src/infrastructure/db/schema/organizations.js";
+import { usersTable } from "../../src/infrastructure/db/schema/users.js";
+import { createTestDatabase, type TestDatabase } from "../../src/test/createTestDatabase.js";
+import { seedDevDatabase } from "../helpers/seedDevData.js";
 
 describe("seedDevDatabase integration", () => {
   let testDatabase: TestDatabase | undefined;

@@ -5,7 +5,7 @@ import {
   type OrganizationLookup,
   type Ticket,
   type TicketsRepositoryPort,
-} from "../tickets.service.js";
+} from "../tickets.service.types.js";
 
 export const routeTestOrganizationId = "6b4df69e-0950-4209-b79a-a5b5d251540f";
 

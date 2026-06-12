@@ -8,7 +8,8 @@ import {
   type OrganizationsRepositoryPort,
   OrganizationsService,
 } from "../modules/organizations/organizations.service.js";
-import { type TicketsRepositoryPort, TicketsService } from "../modules/tickets/tickets.service.js";
+import { TicketsService } from "../modules/tickets/tickets.service.js";
+import type { TicketsRepositoryPort } from "../modules/tickets/tickets.service.types.js";
 
 type CreateTestAppOptions = {
   jwtAudience?: string;

@@ -1,7 +1,7 @@
 import { describe, expect, it, vi } from "vitest";
 
+import { organizationNotFoundMessage } from "../organizations.constants.js";
 import {
-  organizationNotFoundMessage,
   type OrganizationsRepositoryPort,
   OrganizationsService,
 } from "../organizations.service.js";

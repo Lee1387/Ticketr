@@ -5,6 +5,7 @@ import {
   organizationMembersTable,
   type OrganizationMemberRow,
 } from "../../infrastructure/db/schema/organizationMembers.js";
+import type { UserId } from "../users/users.types.js";
 import type { OrganizationId } from "./organizations.types.js";
 
 export class OrganizationMembersRepository {
@@ -12,7 +13,7 @@ export class OrganizationMembersRepository {
 
   async findByOrganizationIdAndUserId(input: {
     organizationId: OrganizationId;
-    userId: string;
+    userId: UserId;
   }): Promise<OrganizationMemberRow | null> {
     const rows = await this.db
       .select()

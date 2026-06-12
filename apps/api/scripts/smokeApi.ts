@@ -1,7 +1,12 @@
-import { z } from "zod";
-
-import { devSeedData } from "../src/infrastructure/db/seedDevData.js";
-import { apiUrl, createDevelopmentToken } from "./devAuth.js";
+import { createDevelopmentToken } from "./helpers/devAuth.js";
+import { devSeedData } from "./helpers/seedDevData.js";
+import { smokeGetJson, smokeJson, smokeStatus } from "./helpers/smokeApiClient.js";
+import {
+  healthResponseSchema,
+  organizationResponseSchema,
+  ticketListResponseSchema,
+  ticketResponseSchema,
+} from "./helpers/smokeApiSchemas.js";
 
 type SmokeResult = {
   detail: string;
@@ -9,43 +14,7 @@ type SmokeResult = {
   statusCode: number;
 };
 
-type SmokeJsonResult<TData> = {
-  data: TData;
-  statusCode: number;
-};
-
 const organizationId = devSeedData.organization.id;
-
-const healthResponseSchema = z.object({
-  status: z.literal("ok"),
-});
-
-const organizationResponseSchema = z.object({
-  organization: z.object({
-    id: z.uuid(),
-    name: z.string().min(1),
-    status: z.string().min(1),
-    createdAt: z.iso.datetime(),
-    updatedAt: z.iso.datetime(),
-  }),
-});
-
-const ticketResponseSchema = z.object({
-  ticket: z.object({
-    id: z.uuid(),
-    organizationId: z.uuid(),
-    subject: z.string().min(1),
-    description: z.string().min(1),
-    status: z.string().min(1),
-    priority: z.string().min(1),
-    createdAt: z.iso.datetime(),
-    updatedAt: z.iso.datetime(),
-  }),
-});
-
-const ticketListResponseSchema = z.object({
-  tickets: z.array(ticketResponseSchema.shape.ticket),
-});
 
 const results: SmokeResult[] = [];
 
@@ -133,112 +102,30 @@ recordResult(
   `status=${updatedTicket.data.ticket.status}`,
 );
 
-await smokeStatus({
+const unauthorizedStatusCode = await smokeStatus({
   expectedStatusCode: 401,
-  detail: "auth required",
   name: "GET /organizations/:organizationId without auth",
   path: `/organizations/${organizationId}`,
 });
+recordResult(
+  "GET /organizations/:organizationId without auth",
+  unauthorizedStatusCode,
+  "auth required",
+);
 
-await smokeStatus({
+const invalidOrganizationStatusCode = await smokeStatus({
   expectedStatusCode: 400,
-  detail: "request validation failed",
   name: "GET /organizations/not-an-id",
   path: "/organizations/not-an-id",
 });
+recordResult(
+  "GET /organizations/not-an-id",
+  invalidOrganizationStatusCode,
+  "request validation failed",
+);
 
 for (const result of results) {
   process.stdout.write(`${result.name}\t${String(result.statusCode)}\t${result.detail}\n`);
-}
-
-async function smokeGetJson<TSchema extends z.ZodType>(input: {
-  authorizationHeader?: string;
-  name: string;
-  path: string;
-  schema: TSchema;
-}): Promise<SmokeJsonResult<z.infer<TSchema>>> {
-  return smokeJson({
-    ...input,
-    method: "GET",
-    expectedStatusCode: 200,
-  });
-}
-
-async function smokeJson<TSchema extends z.ZodType>(input: {
-  authorizationHeader?: string;
-  body?: unknown;
-  expectedStatusCode: number;
-  method: "GET" | "PATCH" | "POST";
-  name: string;
-  path: string;
-  schema: TSchema;
-}): Promise<SmokeJsonResult<z.infer<TSchema>>> {
-  const requestInit: RequestInit = {
-    method: input.method,
-    headers: buildHeaders(input.authorizationHeader),
-  };
-
-  if (input.body !== undefined) {
-    requestInit.body = JSON.stringify(input.body);
-  }
-
-  const response = await fetch(new URL(input.path, apiUrl), requestInit);
-
-  await assertStatus(response, input.expectedStatusCode, input.name);
-
-  const responseBody: unknown = await response.json();
-  const parsedResponse = input.schema.parse(responseBody);
-
-  return {
-    data: parsedResponse,
-    statusCode: response.status,
-  };
-}
-
-async function smokeStatus(input: {
-  detail: string;
-  expectedStatusCode: number;
-  name: string;
-  path: string;
-}): Promise<void> {
-  const response = await fetch(new URL(input.path, apiUrl));
-
-  await assertStatus(response, input.expectedStatusCode, input.name);
-
-  results.push({
-    detail: input.detail,
-    name: input.name,
-    statusCode: response.status,
-  });
-}
-
-async function assertStatus(
-  response: Response,
-  expectedStatusCode: number,
-  name: string,
-): Promise<void> {
-  if (response.status === expectedStatusCode) {
-    return;
-  }
-
-  const responseText = await response.text();
-  throw new Error(
-    `${name} expected ${String(expectedStatusCode)} but received ${String(
-      response.status,
-    )}: ${responseText}`,
-  );
-}
-
-function buildHeaders(authorizationHeader: string | undefined): Headers {
-  const headers = new Headers({
-    "content-type": "application/json",
-  });
-
-  if (authorizationHeader !== undefined) {
-    headers.set("authorization", authorizationHeader);
-  }
-
-  return headers;
 }
 
 function recordResult(name: string, statusCode: number, detail: string): void {

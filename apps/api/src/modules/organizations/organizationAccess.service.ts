@@ -1,10 +1,11 @@
 import type { AuthenticatedUser } from "../../app/auth/authContext.js";
+import type { UserId } from "../users/users.types.js";
 import type { OrganizationId, OrganizationMemberRole } from "./organizations.types.js";
 
 export type OrganizationMembershipLookup = {
   findByOrganizationIdAndUserId: (input: {
     organizationId: OrganizationId;
-    userId: string;
+    userId: UserId;
   }) => Promise<{ role: OrganizationMemberRole } | null>;
 };
 

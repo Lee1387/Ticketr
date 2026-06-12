@@ -1,6 +1,6 @@
 import { z } from "zod";
 
-import { devSeedData } from "../src/infrastructure/db/seedDevData.js";
+import { devSeedData } from "./seedDevData.js";
 
 const devTokenResponseSchema = z.object({
   accessToken: z.string().min(1),

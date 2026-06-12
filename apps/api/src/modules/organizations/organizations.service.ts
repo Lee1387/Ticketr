@@ -1,6 +1,5 @@
+import { organizationNotFoundMessage } from "./organizations.constants.js";
 import type { OrganizationId, OrganizationStatus } from "./organizations.types.js";
-
-export const organizationNotFoundMessage = "Organization was not found.";
 
 export type Organization = {
   id: OrganizationId;

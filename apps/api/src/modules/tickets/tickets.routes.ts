@@ -1,61 +1,20 @@
-import type { FastifyInstance, FastifyRequest } from "fastify";
-import { z } from "zod";
+import type { FastifyInstance } from "fastify";
 
-import { requireAuth } from "../../app/auth/requireAuth.js";
 import { validateRequest } from "../../app/validation/validateRequest.js";
 import type { OrganizationAccessService } from "../organizations/organizationAccess.service.js";
 import {
-  canCreateOrganizationTicket,
-  canReadOrganizationTickets,
-  canUpdateOrganizationTicketStatus,
-} from "../organizations/organizations.policy.js";
-import { organizationIdSchema } from "../organizations/organizations.schemas.js";
-import type {
-  OrganizationId,
-  OrganizationMemberRole,
-} from "../organizations/organizations.types.js";
+  authorizeOrganizationTicketCreate,
+  authorizeOrganizationTicketRead,
+  authorizeOrganizationTicketStatusUpdate,
+} from "./tickets.routes.authorization.js";
 import { toTicketResponse } from "./tickets.mapper.js";
 import {
-  createTicketSchema,
-  listTicketsQuerySchema,
-  ticketIdSchema,
-  updateTicketStatusSchema,
-} from "./tickets.schemas.js";
+  createTicketRequestSchema,
+  getTicketRequestSchema,
+  listTicketsRequestSchema,
+  updateTicketStatusRequestSchema,
+} from "./tickets.routes.schemas.js";
 import type { TicketsService } from "./tickets.service.js";
-
-const listTicketsRequestSchema = z.object({
-  body: z.undefined(),
-  params: z.object({
-    organizationId: organizationIdSchema,
-  }),
-  query: listTicketsQuerySchema,
-});
-
-const getTicketRequestSchema = z.object({
-  body: z.undefined(),
-  params: z.object({
-    organizationId: organizationIdSchema,
-    ticketId: ticketIdSchema,
-  }),
-  query: z.object({}),
-});
-
-const createTicketRequestSchema = z.object({
-  body: createTicketSchema,
-  params: z.object({
-    organizationId: organizationIdSchema,
-  }),
-  query: z.object({}),
-});
-
-const updateTicketStatusRequestSchema = z.object({
-  body: updateTicketStatusSchema,
-  params: z.object({
-    organizationId: organizationIdSchema,
-    ticketId: ticketIdSchema,
-  }),
-  query: z.object({}),
-});
 
 export function registerTicketRoutes(
   app: FastifyInstance,
@@ -160,79 +119,4 @@ export function registerTicketRoutes(
         };
     }
   });
-}
-
-function authorizeOrganizationTicketRead(
-  app: FastifyInstance,
-  organizationAccessService: OrganizationAccessService,
-  request: FastifyRequest,
-  organizationId: OrganizationId,
-): Promise<void> {
-  return authorizeOrganizationTicketAction(
-    app,
-    organizationAccessService,
-    request,
-    organizationId,
-    canReadOrganizationTickets,
-    "You do not have access to this organization's tickets.",
-  );
-}
-
-function authorizeOrganizationTicketCreate(
-  app: FastifyInstance,
-  organizationAccessService: OrganizationAccessService,
-  request: FastifyRequest,
-  organizationId: OrganizationId,
-): Promise<void> {
-  return authorizeOrganizationTicketAction(
-    app,
-    organizationAccessService,
-    request,
-    organizationId,
-    canCreateOrganizationTicket,
-    "You do not have access to create tickets for this organization.",
-  );
-}
-
-function authorizeOrganizationTicketStatusUpdate(
-  app: FastifyInstance,
-  organizationAccessService: OrganizationAccessService,
-  request: FastifyRequest,
-  organizationId: OrganizationId,
-): Promise<void> {
-  return authorizeOrganizationTicketAction(
-    app,
-    organizationAccessService,
-    request,
-    organizationId,
-    canUpdateOrganizationTicketStatus,
-    "You do not have access to update ticket status for this organization.",
-  );
-}
-
-async function authorizeOrganizationTicketAction(
-  app: FastifyInstance,
-  organizationAccessService: OrganizationAccessService,
-  request: FastifyRequest,
-  organizationId: OrganizationId,
-  canAccess: (input: { role: OrganizationMemberRole }) => boolean,
-  forbiddenMessage: string,
-): Promise<void> {
-  const auth = requireAuth(request, app);
-  const access = await organizationAccessService.verifyOrganizationMembership({
-    auth,
-    organizationId,
-  });
-
-  if (access.status === "not-member") {
-    throw app.httpErrors.forbidden(forbiddenMessage);
-  }
-
-  if (
-    !canAccess({
-      role: access.role,
-    })
-  ) {
-    throw app.httpErrors.forbidden(forbiddenMessage);
-  }
 }

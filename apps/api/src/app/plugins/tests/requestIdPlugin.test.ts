@@ -1,7 +1,7 @@
 import { describe, expect, it } from "vitest";
 
-import { createTestApp } from "../../test/createTestApp.js";
-import { requestIdHeaderName } from "./requestIdPlugin.js";
+import { createTestApp } from "../../../test/createTestApp.js";
+import { requestIdHeaderName } from "../requestIdPlugin.js";
 
 const uuidPattern = /^[\da-f]{8}-[\da-f]{4}-4[\da-f]{3}-[89ab][\da-f]{3}-[\da-f]{12}$/u;
 
