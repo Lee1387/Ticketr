@@ -36,13 +36,21 @@ describe("seedDevDatabase integration", () => {
     const organizations = await db.select().from(organizationsTable);
     const memberships = await db.select().from(organizationMembersTable);
 
-    expect(users).toMatchObject([
-      {
-        email: "admin@ticketr.local",
-        id: "11111111-1111-4111-8111-111111111111",
-        status: "active",
-      },
-    ]);
+    expect(users).toHaveLength(2);
+    expect(users).toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({
+          email: "admin@ticketr.local",
+          id: "11111111-1111-4111-8111-111111111111",
+          status: "active",
+        }),
+        expect.objectContaining({
+          email: "smoke-member@ticketr.local",
+          id: "22222222-2222-4222-8222-222222222222",
+          status: "active",
+        }),
+      ]),
+    );
     expect(organizations).toMatchObject([
       {
         id: "6b4df69e-0950-4209-b79a-a5b5d251540f",
@@ -50,12 +58,22 @@ describe("seedDevDatabase integration", () => {
         status: "active",
       },
     ]);
-    expect(memberships).toMatchObject([
-      {
-        organizationId: "6b4df69e-0950-4209-b79a-a5b5d251540f",
-        role: "admin",
-        userId: "11111111-1111-4111-8111-111111111111",
-      },
-    ]);
+    expect(memberships).toHaveLength(2);
+    expect(memberships).toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({
+          organizationId: "6b4df69e-0950-4209-b79a-a5b5d251540f",
+          role: "admin",
+          status: "active",
+          userId: "11111111-1111-4111-8111-111111111111",
+        }),
+        expect.objectContaining({
+          organizationId: "6b4df69e-0950-4209-b79a-a5b5d251540f",
+          role: "agent",
+          status: "active",
+          userId: "22222222-2222-4222-8222-222222222222",
+        }),
+      ]),
+    );
   });
 });

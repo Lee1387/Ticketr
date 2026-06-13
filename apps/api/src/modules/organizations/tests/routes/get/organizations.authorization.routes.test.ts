@@ -2,7 +2,7 @@ import { describe, expect, it, vi } from "vitest";
 
 import { createAuthHeaders } from "../../../../../test/authTestUtils.js";
 import { createTestApp } from "../../../../../test/createTestApp.js";
-import { OrganizationAccessService } from "../../../service/organizationAccess.service.js";
+import { OrganizationAccessService } from "../../../service/access/organizationAccess.service.js";
 import { organizationRouteTestOrganization } from "../organizations.routes.testUtils.js";
 
 describe("organization route authorization", () => {

@@ -1,7 +1,7 @@
 import { describe, expect, it, vi } from "vitest";
 
 import { createTestApp } from "../../../../../test/createTestApp.js";
-import { OrganizationAccessService } from "../../../../organizations/service/organizationAccess.service.js";
+import { OrganizationAccessService } from "../../../../organizations/service/access/organizationAccess.service.js";
 import { AuthService } from "../../../service/auth.service.js";
 import { developmentTokenRouteTestBody } from "../auth.routes.testUtils.js";
 

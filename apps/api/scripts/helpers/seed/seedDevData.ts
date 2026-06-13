@@ -17,8 +17,20 @@ export const devSeedData = {
       "$argon2id$v=19$m=19456,t=2,p=1$Wk8d0gFTibmTODqKthmyrA$6ljON+2OHVrQoTsBGeT+izutYbua0N7d2PGcVob4SX8",
     status: "active" as const,
   },
+  smokeMemberUser: {
+    id: "22222222-2222-4222-8222-222222222222",
+    email: "smoke-member@ticketr.local",
+    name: "Smoke Test Member",
+    passwordHash:
+      "$argon2id$v=19$m=19456,t=2,p=1$Wk8d0gFTibmTODqKthmyrA$6ljON+2OHVrQoTsBGeT+izutYbua0N7d2PGcVob4SX8",
+    status: "active" as const,
+  },
   membership: {
     role: "admin" as const,
+  },
+  smokeMembership: {
+    role: "agent" as const,
+    status: "active" as const,
   },
 };
 
@@ -43,6 +55,23 @@ export async function seedDevDatabase(db: DatabaseClient): Promise<void> {
     });
 
   await db
+    .insert(usersTable)
+    .values({
+      ...devSeedData.smokeMemberUser,
+      updatedAt,
+    })
+    .onConflictDoUpdate({
+      target: usersTable.id,
+      set: {
+        email: devSeedData.smokeMemberUser.email,
+        name: devSeedData.smokeMemberUser.name,
+        passwordHash: devSeedData.smokeMemberUser.passwordHash,
+        status: devSeedData.smokeMemberUser.status,
+        updatedAt,
+      },
+    });
+
+  await db
     .insert(organizationsTable)
     .values({
       ...devSeedData.organization,
@@ -62,6 +91,7 @@ export async function seedDevDatabase(db: DatabaseClient): Promise<void> {
     .values({
       organizationId: devSeedData.organization.id,
       role: devSeedData.membership.role,
+      status: "active",
       updatedAt,
       userId: devSeedData.user.id,
     })
@@ -69,6 +99,25 @@ export async function seedDevDatabase(db: DatabaseClient): Promise<void> {
       target: [organizationMembersTable.organizationId, organizationMembersTable.userId],
       set: {
         role: devSeedData.membership.role,
+        status: "active",
+        updatedAt,
+      },
+    });
+
+  await db
+    .insert(organizationMembersTable)
+    .values({
+      organizationId: devSeedData.organization.id,
+      role: devSeedData.smokeMembership.role,
+      status: devSeedData.smokeMembership.status,
+      updatedAt,
+      userId: devSeedData.smokeMemberUser.id,
+    })
+    .onConflictDoUpdate({
+      target: [organizationMembersTable.organizationId, organizationMembersTable.userId],
+      set: {
+        role: devSeedData.smokeMembership.role,
+        status: "active",
         updatedAt,
       },
     });

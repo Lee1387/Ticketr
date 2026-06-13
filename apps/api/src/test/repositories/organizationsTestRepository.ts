@@ -1,10 +1,11 @@
-import type { OrganizationMembershipLookup } from "../../modules/organizations/service/organizationAccess.service.ports.js";
+import type { OrganizationMembershipLookup } from "../../modules/organizations/service/access/organizationAccess.service.ports.js";
 import type {
   OrganizationMemberRoleLookupPort,
   OrganizationMemberRoleUpdaterPort,
+  OrganizationMemberStatusUpdaterPort,
   OrganizationMembersReaderPort,
   OrganizationsRepositoryPort,
-} from "../../modules/organizations/service/organizations.service.ports.js";
+} from "../../modules/organizations/service/contracts/organizations.service.ports.js";
 import { defaultTestOrganization } from "../fixtures/organizations.fixture.js";
 import { defaultTestUser } from "../fixtures/users.fixture.js";
 
@@ -17,7 +18,8 @@ export const defaultTestOrganizationsRepository: OrganizationsRepositoryPort = {
 };
 
 export const defaultTestOrganizationMembershipLookup: OrganizationMembershipLookup = {
-  findByOrganizationIdAndUserId: () => Promise.resolve({ role: "agent" as const }),
+  findByOrganizationIdAndUserId: () =>
+    Promise.resolve({ membershipStatus: "active" as const, role: "agent" as const }),
 };
 
 export const defaultTestOrganizationMembersReader: OrganizationMembersReaderPort = {
@@ -26,6 +28,7 @@ export const defaultTestOrganizationMembersReader: OrganizationMembersReaderPort
       {
         createdAt: new Date("2026-01-01T00:00:00.000Z"),
         email: defaultTestUser.email,
+        membershipStatus: "active",
         name: defaultTestUser.name,
         role: "agent",
         status: defaultTestUser.status,
@@ -35,14 +38,26 @@ export const defaultTestOrganizationMembersReader: OrganizationMembersReaderPort
 };
 
 export const defaultTestOrganizationMemberRoleLookup: OrganizationMemberRoleLookupPort = {
-  findRoleByOrganizationIdAndUserId: () => Promise.resolve({ role: "agent" }),
+  findRoleByOrganizationIdAndUserId: () =>
+    Promise.resolve({ membershipStatus: "active", role: "agent" }),
 };
 
 export const defaultTestOrganizationMemberRoleUpdater: OrganizationMemberRoleUpdaterPort = {
   updateRoleByOrganizationIdAndUserId: (input) =>
     Promise.resolve({
+      membershipStatus: "active",
       organizationId: input.organizationId,
       role: input.role,
+      userId: input.userId,
+    }),
+};
+
+export const defaultTestOrganizationMemberStatusUpdater: OrganizationMemberStatusUpdaterPort = {
+  updateStatusByOrganizationIdAndUserId: (input) =>
+    Promise.resolve({
+      membershipStatus: input.status,
+      organizationId: input.organizationId,
+      role: "agent",
       userId: input.userId,
     }),
 };

@@ -1,4 +1,4 @@
-import { OrganizationAccessService } from "../../service/organizationAccess.service.js";
+import { OrganizationAccessService } from "../../service/access/organizationAccess.service.js";
 import type { OrganizationMemberRole } from "../../domain/organizations.types.js";
 
 export const organizationRouteTestOrganization = {
@@ -20,18 +20,20 @@ export const organizationRouteTestResponse = {
 export const organizationMemberRouteTestResponse = {
   createdAt: "2026-01-01T00:00:00.000Z",
   email: "agent@example.com",
+  membershipStatus: "active",
   name: "Support Agent",
   role: "agent",
   status: "active",
   userId: "11111111-1111-4111-8111-111111111111",
 };
 
-export const organizationMemberRoleRouteTestUserId = "22222222-2222-4222-8222-222222222222";
+export const organizationMemberRouteTestUserId = "22222222-2222-4222-8222-222222222222";
+export const organizationMemberRoleRouteTestUserId = organizationMemberRouteTestUserId;
 
 export function createOrganizationRouteAccessService(
   role: OrganizationMemberRole,
 ): OrganizationAccessService {
   return new OrganizationAccessService({
-    findByOrganizationIdAndUserId: () => Promise.resolve({ role }),
+    findByOrganizationIdAndUserId: () => Promise.resolve({ membershipStatus: "active", role }),
   });
 }

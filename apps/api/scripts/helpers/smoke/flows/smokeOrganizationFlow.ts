@@ -4,6 +4,7 @@ import { createSmokeResult, type SmokeResult } from "../reporting/smokeResult.js
 import {
   organizationMemberListResponseSchema,
   organizationMemberRoleResponseSchema,
+  organizationMemberStatusResponseSchema,
   organizationResponseSchema,
 } from "../schemas/smokeApiSchemas.js";
 
@@ -38,6 +39,18 @@ export async function runSmokeOrganizationFlow(
     path: `/organizations/${input.organizationId}/members/${devSeedData.user.id}/role`,
     schema: organizationMemberRoleResponseSchema,
   });
+  const deactivatedMember = await smokeJson({
+    authorizationHeader: input.authorizationHeader,
+    expectedStatusCode: 200,
+    method: "DELETE",
+    name: "DELETE /organizations/:organizationId/members/:userId",
+    path: `/organizations/${input.organizationId}/members/${devSeedData.smokeMemberUser.id}`,
+    schema: organizationMemberStatusResponseSchema,
+  });
+
+  if (deactivatedMember.data.member.membershipStatus !== "deactivated") {
+    throw new Error("Deactivated member response did not have deactivated status.");
+  }
 
   return [
     createSmokeResult(
@@ -54,6 +67,11 @@ export async function runSmokeOrganizationFlow(
       "PATCH /organizations/:organizationId/members/:userId/role",
       memberRole.statusCode,
       `role=${memberRole.data.member.role}`,
+    ),
+    createSmokeResult(
+      "DELETE /organizations/:organizationId/members/:userId",
+      deactivatedMember.statusCode,
+      `membershipStatus=${deactivatedMember.data.member.membershipStatus}`,
     ),
   ];
 }

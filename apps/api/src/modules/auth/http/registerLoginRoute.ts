@@ -1,7 +1,7 @@
 import type { FastifyInstance } from "fastify";
 
 import { validateRequest } from "../../../app/validation/validateRequest.js";
-import type { OrganizationAccessService } from "../../organizations/service/organizationAccess.service.js";
+import type { OrganizationAccessService } from "../../organizations/service/access/organizationAccess.service.js";
 import type { AuthService } from "../service/auth.service.js";
 import { loginRequestSchema } from "./auth.routes.schemas.js";
 

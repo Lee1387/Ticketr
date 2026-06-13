@@ -3,7 +3,7 @@ import type { FastifyInstance, FastifyRequest } from "fastify";
 import { requireAuth } from "../../../app/auth/requireAuth.js";
 import { canReadOrganization } from "../domain/organizations.policy.js";
 import type { OrganizationId, OrganizationMemberRole } from "../domain/organizations.types.js";
-import type { OrganizationAccessService } from "../service/organizationAccess.service.js";
+import type { OrganizationAccessService } from "../service/access/organizationAccess.service.js";
 
 const organizationReadForbiddenMessage = "You do not have access to this organization.";
 

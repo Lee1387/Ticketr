@@ -1,7 +1,7 @@
 import type { FastifyInstance } from "fastify";
 
 import { validateRequest } from "../../../../app/validation/validateRequest.js";
-import type { OrganizationAccessService } from "../../../organizations/service/organizationAccess.service.js";
+import type { OrganizationAccessService } from "../../../organizations/service/access/organizationAccess.service.js";
 import type { TicketsService } from "../../service/tickets.service.js";
 import { toTicketResponse } from "../tickets.mapper.js";
 import { authorizeOrganizationTicketStatusUpdate } from "../tickets.routes.authorization.js";

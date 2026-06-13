@@ -1,7 +1,7 @@
 import type { AppServices } from "../app/appServices.js";
 import { AuthService } from "../modules/auth/service/auth.service.js";
 import { InvitationsService } from "../modules/invitations/service/invitations.service.js";
-import { OrganizationAccessService } from "../modules/organizations/service/organizationAccess.service.js";
+import { OrganizationAccessService } from "../modules/organizations/service/access/organizationAccess.service.js";
 import { OrganizationsService } from "../modules/organizations/service/organizations.service.js";
 import { TicketsService } from "../modules/tickets/service/tickets.service.js";
 import {
@@ -11,6 +11,7 @@ import {
 import {
   defaultTestOrganizationMemberRoleLookup,
   defaultTestOrganizationMemberRoleUpdater,
+  defaultTestOrganizationMemberStatusUpdater,
   defaultTestOrganizationMembersReader,
   defaultTestOrganizationMembershipLookup,
   defaultTestOrganizationsRepository,
@@ -40,6 +41,7 @@ export function createTestServices(overrides: Partial<AppServices> = {}): AppSer
         defaultTestOrganizationMembersReader,
         defaultTestOrganizationMemberRoleLookup,
         defaultTestOrganizationMemberRoleUpdater,
+        defaultTestOrganizationMemberStatusUpdater,
       ),
     ticketsService:
       overrides.ticketsService ??

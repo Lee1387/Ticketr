@@ -24,6 +24,7 @@ export const organizationMemberListResponseSchema = z.object({
     z.object({
       createdAt: z.iso.datetime(),
       email: z.email(),
+      membershipStatus: z.string().min(1),
       name: z.string().min(1),
       role: z.string().min(1),
       status: z.string().min(1),
@@ -35,10 +36,13 @@ export const organizationMemberListResponseSchema = z.object({
 export const organizationMemberRoleResponseSchema = z.object({
   member: z.object({
     organizationId: z.uuid(),
+    membershipStatus: z.string().min(1),
     role: z.string().min(1),
     userId: z.uuid(),
   }),
 });
+
+export const organizationMemberStatusResponseSchema = organizationMemberRoleResponseSchema;
 
 export const invitationResponseSchema = z.object({
   invitation: z.object({

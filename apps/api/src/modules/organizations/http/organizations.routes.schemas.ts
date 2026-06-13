@@ -31,3 +31,12 @@ export const updateOrganizationMemberRoleRequestSchema = z.object({
   }),
   query: z.object({}),
 });
+
+export const deactivateOrganizationMemberRequestSchema = z.object({
+  body: z.undefined(),
+  params: z.object({
+    organizationId: organizationIdSchema,
+    userId: userIdSchema,
+  }),
+  query: z.object({}),
+});

@@ -5,6 +5,7 @@ import { createTestApp } from "../../../../../test/createTestApp.js";
 import {
   defaultTestOrganizationMemberRoleLookup,
   defaultTestOrganizationMemberRoleUpdater,
+  defaultTestOrganizationMemberStatusUpdater,
   defaultTestOrganizationMembersReader,
 } from "../../../../../test/repositories/organizationsTestRepository.js";
 import { OrganizationsService } from "../../../service/organizations.service.js";
@@ -21,6 +22,7 @@ describe("organization route not found handling", () => {
           defaultTestOrganizationMembersReader,
           defaultTestOrganizationMemberRoleLookup,
           defaultTestOrganizationMemberRoleUpdater,
+          defaultTestOrganizationMemberStatusUpdater,
         ),
       },
     });

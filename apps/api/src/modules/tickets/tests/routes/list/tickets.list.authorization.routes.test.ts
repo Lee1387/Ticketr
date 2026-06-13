@@ -1,7 +1,7 @@
 import { describe, expect, it } from "vitest";
 
 import { createTestApp } from "../../../../../test/createTestApp.js";
-import { OrganizationAccessService } from "../../../../organizations/service/organizationAccess.service.js";
+import { OrganizationAccessService } from "../../../../organizations/service/access/organizationAccess.service.js";
 import {
   createRouteTestAuthHeaders,
   routeTestOrganizationId,

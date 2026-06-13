@@ -1,7 +1,7 @@
 import type { FastifyInstance, FastifyRequest } from "fastify";
 
 import { requireAuth } from "../../../app/auth/requireAuth.js";
-import type { OrganizationAccessService } from "../../organizations/service/organizationAccess.service.js";
+import type { OrganizationAccessService } from "../../organizations/service/access/organizationAccess.service.js";
 import {
   canCreateOrganizationTicket,
   canReadOrganizationTickets,

@@ -18,6 +18,12 @@ const canManageOrganizationMemberRolesByRole: Record<OrganizationMemberRole, boo
   agent: false,
 };
 
+const canDeactivateOrganizationMembersByRole: Record<OrganizationMemberRole, boolean> = {
+  owner: true,
+  admin: true,
+  agent: false,
+};
+
 type OrganizationPermissionInput = {
   role: OrganizationMemberRole;
 };
@@ -44,4 +50,8 @@ export function canManageOrganizationInvitations(input: OrganizationPermissionIn
 
 export function canManageOrganizationMemberRoles(input: OrganizationPermissionInput): boolean {
   return canManageOrganizationMemberRolesByRole[input.role];
+}
+
+export function canDeactivateOrganizationMembers(input: OrganizationPermissionInput): boolean {
+  return canDeactivateOrganizationMembersByRole[input.role];
 }

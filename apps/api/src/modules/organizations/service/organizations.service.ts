@@ -1,20 +1,24 @@
-import { organizationNotFoundMessage } from "../domain/organizations.constants.js";
-import { listOrganizationMembers } from "./listOrganizationMembers.service.js";
+import { deactivateOrganizationMember } from "./members/deactivation/deactivateOrganizationMember.service.js";
+import { listOrganizationMembers } from "./members/list/listOrganizationMembers.service.js";
+import { getOrganization } from "./organizations/get/getOrganization.service.js";
 import type {
   OrganizationMemberRoleLookupPort,
   OrganizationMemberRoleUpdaterPort,
+  OrganizationMemberStatusUpdaterPort,
   OrganizationMembersReaderPort,
   OrganizationsRepositoryPort,
-} from "./organizations.service.ports.js";
+} from "./contracts/organizations.service.ports.js";
 import type {
+  DeactivateOrganizationMemberCommand,
+  DeactivateOrganizationMemberResult,
   GetOrganizationQuery,
   GetOrganizationResult,
   ListOrganizationMembersQuery,
   ListOrganizationMembersResult,
   UpdateOrganizationMemberRoleCommand,
   UpdateOrganizationMemberRoleResult,
-} from "./organizations.service.types.js";
-import { updateOrganizationMemberRole } from "./updateOrganizationMemberRole.service.js";
+} from "./contracts/organizations.service.types.js";
+import { updateOrganizationMemberRole } from "./members/role/updateOrganizationMemberRole.service.js";
 
 export class OrganizationsService {
   constructor(
@@ -22,22 +26,13 @@ export class OrganizationsService {
     private readonly organizationMembersReader: OrganizationMembersReaderPort,
     private readonly organizationMemberRoleLookup: OrganizationMemberRoleLookupPort,
     private readonly organizationMemberRoleUpdater: OrganizationMemberRoleUpdaterPort,
+    private readonly organizationMemberStatusUpdater: OrganizationMemberStatusUpdaterPort,
   ) {}
 
   async getOrganization(query: GetOrganizationQuery): Promise<GetOrganizationResult> {
-    const organization = await this.organizationsRepository.findById(query.organizationId);
-
-    if (organization === null) {
-      return {
-        status: "not-found",
-        message: organizationNotFoundMessage,
-      };
-    }
-
-    return {
-      status: "found",
-      organization,
-    };
+    return getOrganization(query, {
+      organizationsRepository: this.organizationsRepository,
+    });
   }
 
   async listOrganizationMembers(
@@ -55,6 +50,16 @@ export class OrganizationsService {
     return updateOrganizationMemberRole(command, {
       organizationMemberRoleLookup: this.organizationMemberRoleLookup,
       organizationMemberRoleUpdater: this.organizationMemberRoleUpdater,
+      organizationsRepository: this.organizationsRepository,
+    });
+  }
+
+  async deactivateOrganizationMember(
+    command: DeactivateOrganizationMemberCommand,
+  ): Promise<DeactivateOrganizationMemberResult> {
+    return deactivateOrganizationMember(command, {
+      organizationMemberRoleLookup: this.organizationMemberRoleLookup,
+      organizationMemberStatusUpdater: this.organizationMemberStatusUpdater,
       organizationsRepository: this.organizationsRepository,
     });
   }

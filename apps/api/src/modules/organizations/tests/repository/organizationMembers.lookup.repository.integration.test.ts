@@ -5,11 +5,11 @@ import { organizationsTable } from "../../../../infrastructure/db/schema/organiz
 import { usersTable } from "../../../../infrastructure/db/schema/users.js";
 import { createTestDatabase, type TestDatabase } from "../../../../test/createTestDatabase.js";
 import {
-  getOrganizationMembersRepository,
+  getOrganizationMembershipsRepository,
   getOrganizationMembersTestDatabase,
 } from "./organizationMembers.repository.testUtils.js";
 
-describe("OrganizationMembersRepository lookup integration", () => {
+describe("OrganizationMembershipsRepository integration", () => {
   let testDatabase: TestDatabase | undefined;
 
   beforeAll(async () => {
@@ -46,11 +46,12 @@ describe("OrganizationMembersRepository lookup integration", () => {
     });
 
     await expect(
-      getOrganizationMembersRepository(testDatabase).findByOrganizationIdAndUserId({
+      getOrganizationMembershipsRepository(testDatabase).findByOrganizationIdAndUserId({
         organizationId,
         userId,
       }),
     ).resolves.toMatchObject({
+      membershipStatus: "active",
       organizationId,
       role: "agent",
       userId,
@@ -59,7 +60,7 @@ describe("OrganizationMembersRepository lookup integration", () => {
 
   it("returns null when the user is not a member of the organization", async () => {
     await expect(
-      getOrganizationMembersRepository(testDatabase).findByOrganizationIdAndUserId({
+      getOrganizationMembershipsRepository(testDatabase).findByOrganizationIdAndUserId({
         organizationId: "33333333-3333-4333-8333-333333333333",
         userId: "11111111-1111-4111-8111-111111111111",
       }),

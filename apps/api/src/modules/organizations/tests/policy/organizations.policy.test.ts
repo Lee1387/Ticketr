@@ -2,6 +2,7 @@ import { describe, expect, it } from "vitest";
 
 import {
   canCreateOrganizationTicket,
+  canDeactivateOrganizationMembers,
   canManageOrganizationMemberRoles,
   canManageOrganizationInvitations,
   canReadOrganization,
@@ -61,5 +62,11 @@ describe("organization policy", () => {
     expect(canManageOrganizationMemberRoles({ role: "owner" })).toBe(true);
     expect(canManageOrganizationMemberRoles({ role: "admin" })).toBe(true);
     expect(canManageOrganizationMemberRoles({ role: "agent" })).toBe(false);
+  });
+
+  it("allows owners and admins to deactivate organization members", () => {
+    expect(canDeactivateOrganizationMembers({ role: "owner" })).toBe(true);
+    expect(canDeactivateOrganizationMembers({ role: "admin" })).toBe(true);
+    expect(canDeactivateOrganizationMembers({ role: "agent" })).toBe(false);
   });
 });

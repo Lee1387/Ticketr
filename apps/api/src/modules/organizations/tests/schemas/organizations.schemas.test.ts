@@ -4,6 +4,8 @@ import {
   organizationIdSchema,
   organizationMemberRoleSchema,
   organizationMemberRoleValues,
+  organizationMemberStatusSchema,
+  organizationMemberStatusValues,
   organizationStatusSchema,
   organizationStatusValues,
   updateOrganizationMemberRoleSchema,
@@ -42,6 +44,18 @@ describe("organization schemas", () => {
 
   it("rejects customer as an organization member role", () => {
     expect(organizationMemberRoleSchema.safeParse("customer").success).toBe(false);
+  });
+
+  it("accepts supported organization member statuses", () => {
+    expect(organizationMemberStatusValues).toEqual(["active", "deactivated"]);
+
+    for (const status of organizationMemberStatusValues) {
+      expect(organizationMemberStatusSchema.safeParse(status).success).toBe(true);
+    }
+  });
+
+  it("rejects unsupported organization member statuses", () => {
+    expect(organizationMemberStatusSchema.safeParse("deleted").success).toBe(false);
   });
 
   it("parses update organization member role input", () => {

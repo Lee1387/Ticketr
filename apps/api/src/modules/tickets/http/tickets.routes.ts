@@ -1,6 +1,6 @@
 import type { FastifyInstance } from "fastify";
 
-import type { OrganizationAccessService } from "../../organizations/service/organizationAccess.service.js";
+import type { OrganizationAccessService } from "../../organizations/service/access/organizationAccess.service.js";
 import type { TicketsService } from "../service/tickets.service.js";
 import { registerCreateTicketRoute } from "./routes/registerCreateTicketRoute.js";
 import { registerGetTicketRoute } from "./routes/registerGetTicketRoute.js";

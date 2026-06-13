@@ -2,7 +2,8 @@ import type {
   Organization,
   OrganizationMember,
   OrganizationMemberRoleAssignment,
-} from "../service/organizations.service.models.js";
+  OrganizationMemberStatusAssignment,
+} from "../service/contracts/organizations.service.models.js";
 
 export type OrganizationResponse = {
   id: string;
@@ -25,6 +26,7 @@ export function toOrganizationResponse(organization: Organization): Organization
 export type OrganizationMemberResponse = {
   createdAt: string;
   email: string;
+  membershipStatus: OrganizationMember["membershipStatus"];
   name: string;
   role: OrganizationMember["role"];
   status: OrganizationMember["status"];
@@ -37,6 +39,7 @@ export function toOrganizationMemberResponse(
   return {
     createdAt: member.createdAt.toISOString(),
     email: member.email,
+    membershipStatus: member.membershipStatus,
     name: member.name,
     role: member.role,
     status: member.status,
@@ -45,6 +48,7 @@ export function toOrganizationMemberResponse(
 }
 
 export type OrganizationMemberRoleResponse = {
+  membershipStatus: OrganizationMemberRoleAssignment["membershipStatus"];
   organizationId: string;
   role: OrganizationMemberRoleAssignment["role"];
   userId: string;
@@ -54,6 +58,20 @@ export function toOrganizationMemberRoleResponse(
   member: OrganizationMemberRoleAssignment,
 ): OrganizationMemberRoleResponse {
   return {
+    membershipStatus: member.membershipStatus,
+    organizationId: member.organizationId,
+    role: member.role,
+    userId: member.userId,
+  };
+}
+
+export type OrganizationMemberStatusResponse = OrganizationMemberRoleResponse;
+
+export function toOrganizationMemberStatusResponse(
+  member: OrganizationMemberStatusAssignment,
+): OrganizationMemberStatusResponse {
+  return {
+    membershipStatus: member.membershipStatus,
     organizationId: member.organizationId,
     role: member.role,
     userId: member.userId,

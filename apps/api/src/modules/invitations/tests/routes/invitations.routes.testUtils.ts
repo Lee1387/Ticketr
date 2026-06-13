@@ -1,4 +1,4 @@
-import { OrganizationAccessService } from "../../../organizations/service/organizationAccess.service.js";
+import { OrganizationAccessService } from "../../../organizations/service/access/organizationAccess.service.js";
 import type { OrganizationMemberRole } from "../../../organizations/domain/organizations.types.js";
 
 export const invitationRouteTestAcceptedAt = new Date("2026-01-02T00:00:00.000Z");
@@ -15,6 +15,6 @@ export function createRouteTestOrganizationAccessService(
   role: OrganizationMemberRole,
 ): OrganizationAccessService {
   return new OrganizationAccessService({
-    findByOrganizationIdAndUserId: () => Promise.resolve({ role }),
+    findByOrganizationIdAndUserId: () => Promise.resolve({ membershipStatus: "active", role }),
   });
 }
